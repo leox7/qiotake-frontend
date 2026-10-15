@@ -1,0 +1,31 @@
+/* The two tabs ("I'm a student" / "I'm a landlord"). The rest is in ../auth-card.css */
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-bottom: 24px;
+  padding: 4px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.tabs button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--dark);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tabs button:hover {
+  color: var(--primary);
+}
+
+/* The open tab */
+.tabs button.active {
+  background: var(--primary);
+  color: var(--surface);
+}

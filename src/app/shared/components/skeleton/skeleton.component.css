@@ -1,0 +1,77 @@
+:host {
+  display: block;
+}
+
+/* The moving light that tells the user "loading" */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--border) 45%, var(--surface)) 25%,
+    color-mix(in srgb, var(--border) 20%, var(--surface)) 50%,
+    color-mix(in srgb, var(--border) 45%, var(--surface)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* People who asked their device for less motion get plain grey shapes */
+@media (prefers-reduced-motion: reduce) {
+  .shimmer {
+    animation: none;
+  }
+}
+
+/* ---------- card ---------- */
+.card {
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.photo {
+  aspect-ratio: 4 / 3;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.line {
+  height: 14px;
+  border-radius: 6px;
+}
+
+.wide {
+  width: 85%;
+  height: 18px;
+}
+
+.medium {
+  width: 60%;
+}
+
+.short {
+  width: 35%;
+}
+
+/* ---------- table row ---------- */
+.row {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}

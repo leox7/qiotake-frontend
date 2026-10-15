@@ -1,0 +1,65 @@
+<footer class="footer">
+  <div class="content columns">
+    <!-- Column 1: brand -->
+    <section>
+      <app-logo [light]="true" />
+      <p class="description">{{ info.description }}</p>
+
+      <!-- Only shown when real links are added in site-info.ts -->
+      @if (info.socialLinks.length > 0) {
+        <ul class="social">
+          @for (link of info.socialLinks; track link.url) {
+            <li><a [href]="link.url" target="_blank" rel="noopener noreferrer">{{ link.name }}</a></li>
+          }
+        </ul>
+      }
+    </section>
+
+    <!-- Column 2 -->
+    <nav aria-labelledby="footer-quick-links">
+      <h2 id="footer-quick-links">Quick links</h2>
+      <ul>
+        <li><a routerLink="/listings">Browse homes</a></li>
+        <li><a routerLink="/" fragment="how-it-works">How it works</a></li>
+        <li><a routerLink="/faq">FAQ</a></li>
+        <li><a routerLink="/contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <!-- Column 3 -->
+    <nav aria-labelledby="footer-for-users">
+      <h2 id="footer-for-users">For users</h2>
+      <ul>
+        <li><a routerLink="/register" [queryParams]="{ role: 'student' }">Register as a student</a></li>
+        <li><a routerLink="/register" [queryParams]="{ role: 'landlord' }">Register as a landlord</a></li>
+        <li><a routerLink="/login">Log in</a></li>
+        <li><a routerLink="/bookings">My bookings</a></li>
+      </ul>
+    </nav>
+
+    <!-- Column 4 -->
+    <section>
+      <h2>Contact</h2>
+      <ul>
+        <li><a [href]="'mailto:' + info.supportEmail">{{ info.supportEmail }}</a></li>
+        <li><a [href]="phoneLink">{{ info.phone }}</a></li>
+        <li>{{ info.address }}</li>
+        <li>{{ info.openingHours }}</li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="bottom">
+    <div class="content bottom-inner">
+      <p>© {{ info.copyrightYear }} {{ info.name }}. All rights reserved.</p>
+
+      <ul class="legal">
+        <li><a routerLink="/terms">Terms and Conditions</a></li>
+        <li><a routerLink="/privacy">Privacy Policy</a></li>
+      </ul>
+
+      <button type="button" class="to-top" (click)="scrollToTop()">Back to top</button>
+    </div>
+  </div>
+</footer>

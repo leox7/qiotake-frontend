@@ -1,0 +1,186 @@
+/*
+ * Styling shared by the login, register and verify-otp pages. Each page lists this file in `styleUrls`.
+ * Colours come from the variables in src/styles.css.
+ */
+
+/* The page: a soft gradient with the card in the middle */
+:host {
+  display: block;
+  /* --muted is too pale for small text on white, so helper text uses a darker mix of it */
+  --text-soft: color-mix(in srgb, var(--muted) 60%, var(--dark));
+  background: linear-gradient(
+    160deg,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--focus) 45%, var(--surface)) 100%
+  );
+}
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  padding: 56px 16px 72px;
+}
+
+/* The white card. 440px wide, or 520px with the "wide" class (register). */
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 36px 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--dark) 10%, transparent);
+}
+
+.auth-card.wide {
+  max-width: 520px;
+}
+
+.auth-card h1 {
+  color: var(--dark);
+  font-size: 28px;
+  line-height: 1.2;
+}
+
+.lead {
+  margin: 8px 0 24px;
+  color: var(--text-soft);
+}
+
+/* ---------- Form fields ---------- */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+label {
+  color: var(--dark);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+input:focus {
+  border-color: var(--primary);
+}
+
+/* A red border once the field was touched and is wrong */
+input.invalid {
+  border-color: var(--error);
+}
+
+/* The password box with the Show/Hide button inside it, on the right */
+.password-box {
+  position: relative;
+}
+
+.password-box input {
+  padding-right: 72px;
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  min-width: 44px;
+  min-height: 38px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.toggle-password:hover {
+  background: var(--bg);
+}
+
+.hint {
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.field-error {
+  color: var(--error);
+  font-size: 13px;
+}
+
+/* The message above the submit button when the backend refused the request */
+.form-error {
+  padding: 12px 14px;
+  background: color-mix(in srgb, var(--error) 8%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--error) 35%, var(--surface));
+  border-radius: 8px;
+  color: var(--error);
+  font-size: 14px;
+}
+
+.note {
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--dark);
+  font-size: 14px;
+}
+
+.submit {
+  width: 100%;
+}
+
+.submit:disabled,
+.secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.switch {
+  margin-top: 24px;
+  color: var(--text-soft);
+  font-size: 14px;
+  text-align: center;
+}
+
+.switch a {
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .auth-page {
+    padding-top: 32px;
+  }
+
+  .auth-card {
+    padding: 28px 20px;
+  }
+
+  .two-columns {
+    grid-template-columns: 1fr;
+  }
+}

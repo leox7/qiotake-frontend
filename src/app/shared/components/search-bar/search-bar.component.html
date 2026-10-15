@@ -1,0 +1,40 @@
+<form class="search" [formGroup]="form" (ngSubmit)="onSubmit()" role="search">
+  <div class="field">
+    <label for="search-location">Location</label>
+    <input
+      id="search-location"
+      type="text"
+      formControlName="location"
+      placeholder="e.g. Ruaraka, Roysambu"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="field">
+    <label for="search-room-type">Room type</label>
+    <select id="search-room-type" formControlName="roomType">
+      <option value="">Any room type</option>
+      @for (type of roomTypes; track type.value) {
+        <option [value]="type.value">{{ type.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="search-max-price">Max price (KES / month)</label>
+    <input
+      id="search-max-price"
+      type="number"
+      formControlName="maxPrice"
+      min="0"
+      step="500"
+      placeholder="e.g. 10000"
+      inputmode="numeric"
+    />
+    @if (form.controls.maxPrice.touched && form.controls.maxPrice.invalid) {
+      <p class="error" role="alert">Price cannot be below 0.</p>
+    }
+  </div>
+
+  <button class="primary" type="submit">Search homes</button>
+</form>

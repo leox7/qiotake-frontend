@@ -1,0 +1,38 @@
+<div class="empty">
+  <div class="icon" aria-hidden="true">
+    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      @switch (icon()) {
+        @case ('search') {
+          <circle cx="11" cy="11" r="7" />
+          <path d="M20 20l-4-4" />
+        }
+        @case ('calendar') {
+          <rect x="3" y="5" width="18" height="16" rx="2" />
+          <path d="M3 10h18M8 3v4M16 3v4" />
+        }
+        @case ('card') {
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <path d="M2 10h20M6 15h4" />
+        }
+        @default {
+          <path d="M3 11l9-8 9 8" />
+          <path d="M5 10v10h14V10" />
+          <path d="M10 20v-6h4v6" />
+        }
+      }
+    </svg>
+  </div>
+
+  <h2>{{ heading() }}</h2>
+  @if (text()) {
+    <p>{{ text() }}</p>
+  }
+
+  @if (buttonLabel()) {
+    @if (buttonLink()) {
+      <a class="primary" [routerLink]="buttonLink()">{{ buttonLabel() }}</a>
+    } @else {
+      <button class="primary" type="button" (click)="buttonClick.emit()">{{ buttonLabel() }}</button>
+    }
+  }
+</div>

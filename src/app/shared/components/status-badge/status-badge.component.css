@@ -1,0 +1,39 @@
+:host {
+  display: inline-block;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/*
+ * Each tone = a pale background (the colour mixed with white) and a darker text
+ * (the colour mixed with the dark text colour), so the words stay easy to read.
+ */
+.success {
+  background: color-mix(in srgb, var(--success) 14%, var(--surface));
+  color: color-mix(in srgb, var(--success) 80%, var(--text));
+}
+
+.warning {
+  background: color-mix(in srgb, var(--warning) 16%, var(--surface));
+  color: color-mix(in srgb, var(--warning) 65%, var(--text));
+}
+
+.error {
+  background: color-mix(in srgb, var(--error) 12%, var(--surface));
+  color: color-mix(in srgb, var(--error) 85%, var(--text));
+}
+
+.neutral {
+  background: color-mix(in srgb, var(--muted) 20%, var(--surface));
+  color: var(--dark);
+}

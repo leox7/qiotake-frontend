@@ -1,0 +1,207 @@
+<div class="auth-page">
+  <section class="auth-card wide">
+    <h1>Create your <span class="accent-word">account</span></h1>
+    <p class="lead">Choose the kind of account you need.</p>
+
+    <!-- The tab decides the account type -->
+    <div class="tabs" role="tablist" aria-label="Account type">
+      <button
+        type="button"
+        role="tab"
+        id="tab-student"
+        aria-controls="register-form"
+        [attr.aria-selected]="!isLandlord()"
+        [class.active]="!isLandlord()"
+        (click)="setTab('student')"
+      >
+        I'm a student
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-landlord"
+        aria-controls="register-form"
+        [attr.aria-selected]="isLandlord()"
+        [class.active]="isLandlord()"
+        (click)="setTab('landlord')"
+      >
+        I'm a landlord
+      </button>
+    </div>
+
+    <form
+      id="register-form"
+      role="tabpanel"
+      [attr.aria-labelledby]="isLandlord() ? 'tab-landlord' : 'tab-student'"
+      [formGroup]="form"
+      (ngSubmit)="onSubmit()"
+      novalidate
+    >
+      <div class="two-columns">
+        <div class="field">
+          <label for="reg-first-name">First name</label>
+          <input
+            id="reg-first-name"
+            type="text"
+            formControlName="firstName"
+            autocomplete="given-name"
+            [class.invalid]="form.controls.firstName.touched && form.controls.firstName.invalid"
+          />
+          @if (form.controls.firstName.touched && form.controls.firstName.errors; as errors) {
+            <p class="field-error">
+              @if (errors['required']) {
+                Enter your first name.
+              } @else if (errors['maxlength']) {
+                Use at most 50 characters.
+              } @else {
+                Use letters, spaces, hyphens and apostrophes only.
+              }
+            </p>
+          }
+        </div>
+
+        <div class="field">
+          <label for="reg-last-name">Last name</label>
+          <input
+            id="reg-last-name"
+            type="text"
+            formControlName="lastName"
+            autocomplete="family-name"
+            [class.invalid]="form.controls.lastName.touched && form.controls.lastName.invalid"
+          />
+          @if (form.controls.lastName.touched && form.controls.lastName.errors; as errors) {
+            <p class="field-error">
+              @if (errors['required']) {
+                Enter your last name.
+              } @else if (errors['maxlength']) {
+                Use at most 50 characters.
+              } @else {
+                Use letters, spaces, hyphens and apostrophes only.
+              }
+            </p>
+          }
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="reg-email">Email</label>
+        <input
+          id="reg-email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          [placeholder]="isLandlord() ? 'you@example.com' : 'you' + studentEmailEnding"
+          [class.invalid]="form.controls.email.touched && form.controls.email.invalid"
+        />
+        @if (!isLandlord()) {
+          <p class="hint">Must end with {{ studentEmailEnding }}</p>
+        }
+        @if (form.controls.email.touched && form.controls.email.errors; as errors) {
+          <p class="field-error">
+            @if (errors['server']) {
+              {{ errors['server'] }}
+            } @else if (errors['required']) {
+              Enter your email.
+            } @else if (errors['email']) {
+              Enter a valid email address.
+            } @else {
+              Your student email must end with {{ studentEmailEnding }}
+            }
+          </p>
+        }
+      </div>
+
+      @if (isLandlord()) {
+        <div class="field">
+          <label for="reg-phone">Phone number</label>
+          <input
+            id="reg-phone"
+            type="tel"
+            formControlName="phoneNumber"
+            autocomplete="tel"
+            placeholder="0712 345 678"
+            [class.invalid]="form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid"
+          />
+          @if (form.controls.phoneNumber.touched && form.controls.phoneNumber.errors; as errors) {
+            <p class="field-error">
+              @if (errors['required']) {
+                Enter your phone number.
+              } @else {
+                Enter a Kenyan number, for example 0712345678 or +254712345678.
+              }
+            </p>
+          }
+        </div>
+
+        <div class="field">
+          <label for="reg-national-id">National ID number</label>
+          <input
+            id="reg-national-id"
+            type="text"
+            inputmode="numeric"
+            formControlName="nationalId"
+            autocomplete="off"
+            [class.invalid]="form.controls.nationalId.touched && form.controls.nationalId.invalid"
+          />
+          <p class="hint">Digits only, 7 or 8 digits.</p>
+          @if (form.controls.nationalId.touched && form.controls.nationalId.errors; as errors) {
+            <p class="field-error">
+              @if (errors['required']) {
+                Enter your national ID number.
+              } @else if (errors['pattern']) {
+                Use digits only.
+              } @else {
+                A national ID number has 7 or 8 digits.
+              }
+            </p>
+          }
+        </div>
+      }
+
+      <div class="field">
+        <label for="reg-password">Password</label>
+        <div class="password-box">
+          <input
+            id="reg-password"
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="new-password"
+            [class.invalid]="form.controls.password.touched && form.controls.password.invalid"
+          />
+          <button
+            type="button"
+            class="toggle-password"
+            (click)="togglePassword()"
+            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'"
+          >
+            {{ showPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        <p class="hint">At least 8 characters and one number.</p>
+        @if (form.controls.password.touched && form.controls.password.errors; as errors) {
+          <p class="field-error">
+            @if (errors['required']) {
+              Choose a password.
+            } @else {
+              Your password needs at least 8 characters and one number.
+            }
+          </p>
+        }
+      </div>
+
+      @if (isLandlord()) {
+        <p class="note">Your landlord account becomes active after you post your first listing.</p>
+      }
+
+      @if (errorMessage()) {
+        <p class="form-error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button class="primary submit" type="submit" [disabled]="loading()">
+        {{ loading() ? 'Please wait' : 'Create account' }}
+      </button>
+    </form>
+
+    <p class="switch">Already have an account? <a routerLink="/login">Log in</a></p>
+  </section>
+</div>

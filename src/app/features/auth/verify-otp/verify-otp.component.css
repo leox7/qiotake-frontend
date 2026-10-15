@@ -1,0 +1,35 @@
+/* The row of six digit boxes. The rest of the styling is in ../auth-card.css */
+.code-boxes {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+}
+
+.code-box {
+  min-height: 56px;
+  padding: 0;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.countdown {
+  color: var(--text-soft);
+  font-size: 14px;
+  text-align: center;
+}
+
+.countdown strong {
+  color: var(--dark);
+}
+
+@media (max-width: 400px) {
+  .code-boxes {
+    gap: 6px;
+  }
+
+  .code-box {
+    min-height: 48px;
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,95 @@
+<header class="navbar">
+  <div class="content bar">
+    <app-logo />
+
+    <!-- Main links, wide screens only. routerLinkActive adds the "active" class on the current page. -->
+    <nav class="links" aria-label="Main">
+      <a routerLink="/listings" routerLinkActive="active">Browse homes</a>
+      <!-- Goes to the home page and scrolls down to the section with id="how-it-works" -->
+      <a routerLink="/" fragment="how-it-works">How it works</a>
+      <a routerLink="/faq" routerLinkActive="active">FAQ</a>
+      <a routerLink="/contact" routerLinkActive="active">Contact</a>
+    </nav>
+
+    <!-- Account area, wide screens only -->
+    <div class="actions">
+      @if (isLoggedIn()) {
+        <div class="account">
+          <button
+            #avatarButton
+            type="button"
+            class="avatar"
+            [attr.aria-label]="'Account menu for ' + fullName()"
+            aria-controls="account-menu"
+            [attr.aria-expanded]="accountMenuOpen()"
+            (click)="toggleAccountMenu()"
+          >
+            {{ initials() }}
+          </button>
+
+          @if (accountMenuOpen()) {
+            <ul class="dropdown" id="account-menu">
+              <li><a routerLink="/profile" (click)="closeMenus()">My profile</a></li>
+              <li>
+                <a [routerLink]="dashboardLink().path" (click)="closeMenus()">{{ dashboardLink().label }}</a>
+              </li>
+              <li><button type="button" (click)="logOut()">Log out</button></li>
+            </ul>
+          }
+        </div>
+      } @else {
+        <a class="secondary" routerLink="/login">Log in</a>
+        <a class="primary" routerLink="/register">Create account</a>
+      }
+    </div>
+
+    <!-- Hamburger button, narrow screens only -->
+    <button
+      #hamburgerButton
+      type="button"
+      class="hamburger"
+      [attr.aria-label]="mobileMenuOpen() ? 'Close menu' : 'Open menu'"
+      aria-controls="mobile-menu"
+      [attr.aria-expanded]="mobileMenuOpen()"
+      (click)="toggleMobileMenu()"
+    >
+      @if (mobileMenuOpen()) {
+        <!-- X icon -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      } @else {
+        <!-- three lines icon -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      }
+    </button>
+  </div>
+
+  <!-- The menu panel that the hamburger opens (narrow screens) -->
+  @if (mobileMenuOpen()) {
+    <div class="mobile-panel" id="mobile-menu">
+      <nav class="content" aria-label="Mobile">
+        <a routerLink="/listings" routerLinkActive="active" (click)="closeMenus()">Browse homes</a>
+        <a routerLink="/" fragment="how-it-works" (click)="closeMenus()">How it works</a>
+        <a routerLink="/faq" routerLinkActive="active" (click)="closeMenus()">FAQ</a>
+        <a routerLink="/contact" routerLinkActive="active" (click)="closeMenus()">Contact</a>
+
+        <hr />
+
+        @if (isLoggedIn()) {
+          <p class="signed-in-as">Signed in as {{ fullName() }}</p>
+          <a routerLink="/profile" (click)="closeMenus()">My profile</a>
+          <a [routerLink]="dashboardLink().path" (click)="closeMenus()">{{ dashboardLink().label }}</a>
+          <button type="button" (click)="logOut()">Log out</button>
+        } @else {
+          <div class="mobile-buttons">
+            <a class="secondary" routerLink="/login" (click)="closeMenus()">Log in</a>
+            <a class="primary" routerLink="/register" (click)="closeMenus()">Create account</a>
+          </div>
+        }
+      </nav>
+    </div>
+  }
+</header>

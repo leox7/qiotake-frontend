@@ -1,0 +1,14 @@
+<!--
+  role="status" makes screen readers read new messages out loud.
+  This box is always on the page (even when empty), otherwise some screen readers miss the first message.
+-->
+<div class="toasts" role="status" aria-live="polite">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div class="toast" [class]="toast.kind">
+      <span>{{ toast.message }}</span>
+      <button type="button" class="close" (click)="toastService.dismiss(toast.id)" aria-label="Dismiss message">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+  }
+</div>

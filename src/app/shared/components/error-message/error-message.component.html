@@ -1,0 +1,9 @@
+<!-- role="alert" makes screen readers read the message right away -->
+<div class="error-box" role="alert">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v6M12 16.5v.5" />
+  </svg>
+  <p>{{ message() }}</p>
+  <button class="secondary" type="button" (click)="retry.emit()">Retry</button>
+</div>

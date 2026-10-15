@@ -1,0 +1,125 @@
+:host {
+  display: block;
+}
+
+.footer {
+  background: var(--dark);
+  /* Text on the dark background: light teal-grey (--border) is easy to read */
+  color: var(--border);
+  font-size: 15px;
+}
+
+/* ---------- Four columns (stack on small screens) ---------- */
+.columns {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.3fr;
+  gap: 40px;
+  padding-top: 56px;
+  padding-bottom: 48px;
+}
+
+.description {
+  max-width: 280px;
+  margin-top: 16px;
+}
+
+h2 {
+  margin-bottom: 16px;
+  color: var(--surface);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: var(--border);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--surface);
+  text-decoration: underline;
+}
+
+.social {
+  flex-direction: row;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* ---------- Bottom bar ---------- */
+.bottom {
+  border-top: 1px solid color-mix(in srgb, var(--border) 25%, transparent);
+}
+
+.bottom-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 32px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  font-size: 14px;
+}
+
+.legal {
+  flex-direction: row;
+  gap: 24px;
+  margin-right: auto;
+}
+
+.to-top {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: var(--surface);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.to-top:hover {
+  background: color-mix(in srgb, var(--surface) 10%, transparent);
+}
+
+/* Footer links are plain text; keep the focus ring visible on the dark background */
+a:focus-visible,
+.to-top:focus-visible {
+  outline-color: var(--focus);
+}
+
+@media (max-width: 900px) {
+  .columns {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 799px) {
+  .legal {
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .columns {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .bottom-inner,
+  .legal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

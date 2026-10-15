@@ -1,0 +1,21 @@
+:host {
+  display: block;
+}
+
+.error-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 24px;
+  background: color-mix(in srgb, var(--error) 6%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--error) 35%, var(--surface));
+  border-radius: var(--radius-md);
+  color: var(--error);
+  text-align: center;
+}
+
+p {
+  max-width: 460px;
+  color: var(--text);
+}

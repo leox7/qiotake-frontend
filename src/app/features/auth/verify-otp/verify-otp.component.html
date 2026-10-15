@@ -1,0 +1,61 @@
+<div class="auth-page">
+  <section class="auth-card">
+    <h1>Check your <span class="accent-word">email</span></h1>
+    <p class="lead">
+      We sent a 6 digit code to <strong>{{ maskedEmail }}</strong>. It is valid for 5 minutes.
+    </p>
+
+    <form (submit)="onSubmit($event)" novalidate>
+      <!-- Six boxes, one digit each. The component code moves between them. -->
+      <div class="code-boxes" role="group" aria-label="6 digit code">
+        @for (box of digits(); track $index) {
+          <input
+            #box
+            type="text"
+            inputmode="numeric"
+            maxlength="1"
+            class="code-box"
+            [class.invalid]="errorMessage() !== ''"
+            [attr.aria-label]="'Digit ' + ($index + 1) + ' of 6'"
+            [attr.autocomplete]="$index === 0 ? 'one-time-code' : 'off'"
+            (input)="onInput($event, $index)"
+            (keydown)="onKeydown($event, $index)"
+            (paste)="onPaste($event, $index)"
+          />
+        }
+      </div>
+
+      <!-- role="timer": screen readers do not read it out every second -->
+      @if (expired()) {
+        <p class="form-error" role="alert">Code expired, request a new one.</p>
+      } @else {
+        <p class="countdown" role="timer">Code expires in <strong>{{ countdown() }}</strong></p>
+      }
+
+      @if (errorMessage() && !expired()) {
+        <p class="form-error" role="alert">{{ errorMessage() }}</p>
+      }
+
+      <button class="primary submit" type="submit" [disabled]="loading() || expired()">
+        {{ loading() ? 'Please wait' : 'Verify and log in' }}
+      </button>
+
+      <button
+        class="secondary submit"
+        type="button"
+        [disabled]="resendSecondsLeft() > 0 || resending()"
+        (click)="onResend()"
+      >
+        @if (resending()) {
+          Sending...
+        } @else if (resendSecondsLeft() > 0) {
+          Resend code in {{ resendSecondsLeft() }}s
+        } @else {
+          Resend code
+        }
+      </button>
+    </form>
+
+    <p class="switch"><a routerLink="/login">Use a different email</a></p>
+  </section>
+</div>

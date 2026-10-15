@@ -1,0 +1,16 @@
+@if (kind() === 'card') {
+  <div class="card" aria-hidden="true">
+    <div class="photo shimmer"></div>
+    <div class="body">
+      <div class="line wide shimmer"></div>
+      <div class="line medium shimmer"></div>
+      <div class="line short shimmer"></div>
+    </div>
+  </div>
+} @else {
+  <div class="row" aria-hidden="true" [style.grid-template-columns]="'repeat(' + columns() + ', 1fr)'">
+    @for (cell of cells(); track cell) {
+      <div class="line shimmer"></div>
+    }
+  </div>
+}

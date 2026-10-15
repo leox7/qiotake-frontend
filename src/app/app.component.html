@@ -1,0 +1,12 @@
+@if (showNavbarAndFooter()) {
+  <app-navbar />
+}
+<main>
+  <router-outlet />
+</main>
+@if (showFooter()) {
+  <app-footer />
+}
+
+<!-- Pop-up messages from ToastService. Always on the page, whatever the layout. -->
+<app-toast />

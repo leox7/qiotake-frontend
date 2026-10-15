@@ -1,0 +1,192 @@
+:host {
+  display: block;
+}
+
+.navbar {
+  position: relative; /* the mobile panel is positioned against the bar */
+  z-index: 10;
+  height: 80px; /* includes the 1px border below, because every box uses border-box */
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* ---------- Links ---------- */
+.links {
+  display: flex;
+  gap: 32px;
+  margin-left: 48px;
+}
+
+.links a {
+  padding: 8px 0;
+  border-bottom: 2px solid transparent;
+  color: var(--dark);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.links a:hover,
+.links a.active {
+  color: var(--primary);
+}
+
+/* The page you are on gets an underline */
+.links a.active {
+  border-bottom-color: var(--primary);
+}
+
+/* ---------- Right side ---------- */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.account {
+  position: relative;
+}
+
+/* The round button with the user's initials */
+.avatar {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--surface);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.avatar:hover {
+  background: var(--primary-hover);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--dark) 15%, transparent);
+}
+
+.dropdown a,
+.dropdown button {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--text);
+  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dropdown a:hover,
+.dropdown button:hover {
+  background: var(--bg);
+  color: var(--primary);
+}
+
+/* ---------- Hamburger (hidden on wide screens) ---------- */
+.hamburger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  margin-left: auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--dark);
+  cursor: pointer;
+}
+
+/* ---------- Mobile panel (never shown on wide screens) ---------- */
+.mobile-panel {
+  display: none;
+}
+
+/* ---------- Narrow screens ---------- */
+@media (max-width: 799px) {
+  .links,
+  .actions {
+    display: none;
+  }
+
+  .hamburger {
+    display: inline-flex;
+  }
+
+  .mobile-panel {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding: 8px 0 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--dark) 15%, transparent);
+  }
+
+  .mobile-panel nav {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-panel nav > a,
+  .mobile-panel nav > button {
+    display: block;
+    padding: 14px 0;
+    border: 0;
+    background: none;
+    color: var(--dark);
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .mobile-panel nav > a.active {
+    color: var(--primary);
+    font-weight: 700;
+  }
+
+  .mobile-panel hr {
+    width: 100%;
+    margin: 8px 0;
+    border: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .signed-in-as {
+    padding: 8px 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .mobile-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 8px;
+  }
+}

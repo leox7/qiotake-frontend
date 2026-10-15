@@ -1,0 +1,116 @@
+:host {
+  display: block;
+}
+
+.card {
+  position: relative; /* the stretched link below is positioned against the card */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.card:hover {
+  border-color: var(--primary);
+}
+
+/* Show the focus ring around the whole card when the title link is focused with the keyboard */
+.card:has(a:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.photo {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--bg);
+}
+
+.photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--muted);
+}
+
+.badge-spot {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px;
+}
+
+.title {
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.title a {
+  color: var(--dark);
+  text-decoration: none;
+}
+
+/* The invisible layer that makes the whole card clickable */
+.title a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.title a:focus-visible {
+  outline: none; /* the card shows the ring instead (see .card:has above) */
+}
+
+.location {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.pill {
+  padding: 3px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--dark);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.landlord {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.price {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.price strong {
+  color: var(--primary);
+  font-size: 18px;
+}

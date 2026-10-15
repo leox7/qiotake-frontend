@@ -1,0 +1,49 @@
+:host {
+  display: inline-block;
+}
+
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+/* The rounded square with the letter Q */
+.mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--surface);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.word {
+  color: var(--dark);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+/* The small "KE" after the name */
+.ke {
+  margin-left: 1px;
+  color: var(--primary);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+/* On a dark background the name is white, and "KE" uses a lighter teal so it can still be read */
+.light .word {
+  color: var(--surface);
+}
+
+.light .ke {
+  color: var(--focus);
+}
