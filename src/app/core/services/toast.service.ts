@@ -33,6 +33,11 @@ export class ToastService {
   }
 
   private show(kind: Toast['kind'], message: string): void {
+    // Five requests can fail together with the same problem: show that message once, not five times.
+    if (this.toasts().some((toast) => toast.message === message)) {
+      return;
+    }
+
     const id = this.nextId++;
     this.toasts.update((list) => [...list, { id, kind, message }]);
     // Hide it again after 3 seconds.

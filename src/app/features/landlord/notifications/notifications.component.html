@@ -1,0 +1,44 @@
+@if (errorText()) {
+  <app-error-message [message]="errorText()" (retry)="load()" />
+} @else if (loading()) {
+  <span class="visually-hidden">Loading your notifications...</span>
+  <div class="list">
+    @for (row of skeletonRows; track row) {
+      <app-skeleton kind="stat" />
+    }
+  </div>
+} @else if (notifications().length === 0) {
+  <app-empty-state icon="home" heading="No notifications yet" text="News about your bookings and payments shows here." />
+} @else {
+  <ul class="list">
+    @for (item of notifications(); track item.id) {
+      <li class="item" [class.unread]="!item.read">
+        <div class="text">
+          <p class="message">
+            @if (!item.read) {
+              <span class="visually-hidden">Unread: </span>
+            }
+            {{ item.message }}
+          </p>
+          <p class="date">{{ item.dateCreated | date: 'd MMM y, HH:mm' }}</p>
+        </div>
+
+        @if (!item.read) {
+          <button class="secondary" type="button" [disabled]="markingId() !== null" (click)="markAsRead(item)">
+            {{ markingId() === item.id ? 'Saving...' : 'Mark as read' }}
+          </button>
+        }
+      </li>
+    }
+  </ul>
+
+  @if (totalPages() > 1) {
+    <nav class="pagination" aria-label="Pages">
+      <button class="secondary" type="button" [disabled]="page() === 0" (click)="changePage(-1)">Previous</button>
+      <span>Page {{ page() + 1 }} of {{ totalPages() }}</span>
+      <button class="secondary" type="button" [disabled]="page() >= totalPages() - 1" (click)="changePage(1)">
+        Next
+      </button>
+    </nav>
+  }
+}

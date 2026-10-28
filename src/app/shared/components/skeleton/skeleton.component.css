@@ -67,6 +67,22 @@
   width: 35%;
 }
 
+/* ---------- dashboard number card ---------- */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.big {
+  width: 45%;
+  height: 32px;
+}
+
 /* ---------- table row ---------- */
 .row {
   display: grid;

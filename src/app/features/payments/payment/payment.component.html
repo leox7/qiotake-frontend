@@ -1,3 +1,177 @@
-<section class="content">
-  <h1>Payment</h1>
+<section class="page">
+  <div class="card">
+    <!-- Only one of these screens shows at a time. `view()` says which (see payment.component.ts). -->
+    @switch (view()) {
+      @case ('loading') {
+        <div class="center" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <p>Loading your payment...</p>
+        </div>
+      }
+
+      @case ('error') {
+        <app-error-message [message]="errorText()" (retry)="load()" />
+      }
+
+      @case ('problem') {
+        <div class="center">
+          <h1>We cannot take a payment here</h1>
+          <p>{{ problemText() }}</p>
+          <a class="primary" routerLink="/bookings">Back to my bookings</a>
+        </div>
+      }
+
+      @case ('nothing') {
+        <div class="center">
+          <h1>Nothing to pay right now</h1>
+          <p>Your deposit is paid and there is no rent waiting for this booking.</p>
+          <a class="primary" routerLink="/bookings">Back to my bookings</a>
+        </div>
+      }
+
+      @case ('form') {
+        <p class="eyebrow">Secure M-Pesa payment</p>
+        <h1>{{ paymentType() === 'DEPOSIT' ? 'Pay your deposit' : 'Pay your rent' }}</h1>
+
+        <dl class="summary">
+          <div>
+            <dt>For</dt>
+            <dd>{{ paymentType() === 'DEPOSIT' ? "Deposit (one month's rent)" : 'Monthly rent' }}</dd>
+          </div>
+          <div>
+            <dt>Home</dt>
+            <dd>{{ booking()?.listingTitle }}</dd>
+          </div>
+          <div class="total">
+            <dt>Amount to pay</dt>
+            <dd>KES {{ price() | number: '1.0-2' }}</dd>
+          </div>
+        </dl>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+          <label for="pay-phone">M-Pesa phone number</label>
+          <input
+            id="pay-phone"
+            type="tel"
+            inputmode="tel"
+            autocomplete="tel"
+            formControlName="phone"
+            [attr.aria-invalid]="form.controls.phone.touched && form.controls.phone.invalid"
+            aria-describedby="pay-phone-hint pay-phone-error"
+          />
+          <p id="pay-phone-hint" class="hint">Use 0712345678, 0112345678, +254712345678 or 254712345678</p>
+          <p id="pay-phone-error" class="field-error">
+            @if (form.controls.phone.touched && form.controls.phone.hasError('required')) {
+              Enter your M-Pesa phone number.
+            } @else if (form.controls.phone.touched && form.controls.phone.hasError('kenyanPhone')) {
+              That does not look like a Kenyan mobile number. Try 0712345678.
+            }
+          </p>
+
+          @if (formError()) {
+            <!-- The backend's reason, for example a payment for this phone is already being processed -->
+            <p class="form-error" role="alert">{{ formError() }}</p>
+          }
+
+          <!-- Disabled from the first click until the answer arrives, so it cannot be paid twice -->
+          <button class="primary pay" type="submit" [disabled]="sending()">
+            {{ sending() ? 'Sending...' : 'Pay KES ' + (price() | number: '1.0-2') + ' with M-Pesa' }}
+          </button>
+        </form>
+      }
+
+      @case ('pending') {
+        <div class="center" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <h1>Check your phone</h1>
+          <p>Enter your M-Pesa PIN to finish paying.</p>
+          <p class="phone">We sent the request to {{ payment()?.phoneNumber }}</p>
+          <p class="countdown">Waiting for your PIN: <strong>{{ countdownText() }}</strong></p>
+          <p class="warning">Do not close this page or make another payment.</p>
+        </div>
+      }
+
+      @case ('success') {
+        <div class="center" role="status">
+          <span class="tick" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
+            </svg>
+          </span>
+          <h1>{{ payment()?.type === 'DEPOSIT' ? 'Your deposit is paid' : 'Your rent is paid' }}</h1>
+
+          <dl class="summary left">
+            <div>
+              <dt>Amount paid</dt>
+              <dd>KES {{ payment()?.amount | number: '1.0-2' }}</dd>
+            </div>
+            @if (payment()?.mpesaReceiptNumber) {
+              <div>
+                <dt>M-Pesa receipt</dt>
+                <dd>{{ payment()?.mpesaReceiptNumber }}</dd>
+              </div>
+            }
+          </dl>
+
+          <a class="primary" routerLink="/bookings">View my booking</a>
+        </div>
+      }
+
+      @case ('failed') {
+        <div class="center" role="alert">
+          <h1>The payment did not go through</h1>
+          <!-- The backend does not tell us why, so we list the usual reasons -->
+          <p>
+            This can happen if the request was cancelled on your phone, the PIN was wrong, or there was not
+            enough money in M-Pesa. You can try again.
+          </p>
+          <button class="primary" type="button" (click)="tryAgain()">Try again</button>
+          <a class="secondary" routerLink="/bookings">Back to my bookings</a>
+        </div>
+      }
+
+      @case ('confirming') {
+        <div class="center" role="status">
+          <span class="spinner" aria-hidden="true"></span>
+          <h1>We are confirming your payment</h1>
+          <p class="warning">Do not pay again.</p>
+          <p>We are checking with M-Pesa and will email you as soon as it is confirmed.</p>
+          @if (stillWaiting()) {
+            <p class="muted">M-Pesa has not answered yet. Please check again in a little while.</p>
+          }
+          <button class="primary" type="button" [disabled]="checking()" (click)="checkStatus()">
+            {{ checking() ? 'Checking...' : 'Check status' }}
+          </button>
+          <a class="secondary" routerLink="/bookings">Back to my bookings</a>
+        </div>
+      }
+    }
+
+    @if (testMode() && view() !== 'loading' && view() !== 'error' && view() !== 'problem') {
+      <p class="test-mode">Test payment mode, no real money is moved</p>
+    }
+  </div>
+
+  <!-- Earlier payments of this booking -->
+  @if (payments().length > 0 && view() !== 'loading' && view() !== 'error' && view() !== 'problem') {
+    <section class="history" aria-labelledby="history-title">
+      <h2 id="history-title">Payment history</h2>
+      <ul>
+        @for (item of payments(); track item.id) {
+          <li>
+            <div>
+              <p class="history-main">{{ typeLabels[item.type] }} · KES {{ item.amount | number: '1.0-2' }}</p>
+              <p class="muted">
+                {{ dateOf(item) }}
+                @if (item.mpesaReceiptNumber) {
+                  · Receipt {{ item.mpesaReceiptNumber }}
+                }
+              </p>
+            </div>
+            <app-status-badge [status]="item.status" />
+          </li>
+        }
+      </ul>
+    </section>
+  }
 </section>

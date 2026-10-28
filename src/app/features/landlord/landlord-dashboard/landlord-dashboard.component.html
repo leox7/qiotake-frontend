@@ -1,3 +1,100 @@
-<section class="content">
-  <h1>Landlord dashboard</h1>
+<!-- A landlord with no listing yet must post one to become active -->
+@if (hasNoListings()) {
+  <section class="banner" aria-label="Activate your account">
+    <p><strong>Post your first listing to activate your account</strong></p>
+    <a class="primary" routerLink="/landlord/listings/new">Add listing</a>
+  </section>
+}
+
+<!-- ---------- Number cards ---------- -->
+@if (statsError()) {
+  <app-error-message [message]="statsError()" (retry)="loadStats()" />
+} @else if (statsLoading()) {
+  <span class="visually-hidden">Loading your numbers...</span>
+  <div class="stats">
+    <app-skeleton kind="stat" />
+    <app-skeleton kind="stat" />
+    <app-skeleton kind="stat" />
+  </div>
+} @else if (stats(); as s) {
+  <div class="stats">
+    <section class="stat">
+      <h2>Active listings</h2>
+      <p class="value">{{ s.activeListings }}</p>
+    </section>
+
+    <section class="stat">
+      <h2>Pending requests</h2>
+      <p class="value">{{ s.pendingRequests }}</p>
+      @if (s.pendingRequests > 0) {
+        <p class="hint attention">Needs your attention</p>
+      }
+    </section>
+
+    <section class="stat">
+      <h2>Income this month</h2>
+      <p class="value">KES {{ s.incomeThisMonth | number: '1.0-0' }}</p>
+      @if (incomeChange(); as change) {
+        <p class="hint" [class.good]="change.tone === 'good'" [class.bad]="change.tone === 'bad'">
+          {{ change.text }}
+        </p>
+      }
+    </section>
+  </div>
+}
+
+<!-- ---------- Recent booking requests ---------- -->
+<section class="requests" aria-labelledby="requests-title">
+  <h2 id="requests-title">Recent booking requests</h2>
+
+  @if (requestsError()) {
+    <app-error-message [message]="requestsError()" (retry)="loadRequests()" />
+  } @else if (requestsLoading()) {
+    <span class="visually-hidden">Loading your booking requests...</span>
+    <div class="table-card">
+      @for (row of skeletonRows; track row) {
+        <app-skeleton kind="row" [columns]="5" />
+      }
+    </div>
+  } @else if (requests().length === 0) {
+    <app-empty-state
+      icon="calendar"
+      heading="No booking requests yet"
+      text="When a student asks to rent one of your homes, the request shows here."
+    />
+  } @else {
+    <!-- The card scrolls sideways on a small screen, so the page itself never does -->
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Student</th>
+            <th scope="col">Listing</th>
+            <th scope="col">Dates</th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="visually-hidden">Action</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (request of requests(); track request.id) {
+            <tr>
+              <td>{{ request.studentFirstName }}</td>
+              <td>{{ request.listingTitle }}</td>
+              <td class="dates">{{ dateRange(request) }}</td>
+              <td><app-status-badge [status]="request.status" /></td>
+              <td>
+                <!-- The real booking actions come later, for now both go to the Booking requests page -->
+                <a
+                  routerLink="/landlord/bookings"
+                  [attr.aria-label]="(request.status === 'PENDING' ? 'Review' : 'View') + ' the request from ' + request.studentFirstName"
+                >
+                  {{ request.status === 'PENDING' ? 'Review' : 'View' }}
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
 </section>

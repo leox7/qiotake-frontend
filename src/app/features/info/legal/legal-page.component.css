@@ -1,0 +1,166 @@
+:host {
+  display: block;
+  /* --muted is too pale for small text on white, so helper text uses a darker mix of it */
+  --text-soft: color-mix(in srgb, var(--muted) 60%, var(--dark));
+}
+
+.page {
+  padding-top: 48px;
+  padding-bottom: 80px;
+}
+
+.head h1 {
+  margin-top: 8px;
+  color: var(--dark);
+  font-size: 36px;
+  line-height: 1.2;
+}
+
+.updated {
+  margin-top: 8px;
+  color: var(--text-soft);
+  font-size: 14px;
+}
+
+/* ---- two columns: contents on the left, text on the right ---- */
+
+.layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 720px);
+  gap: 56px;
+  align-items: start;
+  margin-top: 40px;
+}
+
+/* ---- table of contents (computers) ---- */
+
+.toc {
+  position: sticky;
+  top: 24px;
+}
+
+.toc-title,
+.jump label {
+  color: var(--dark);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.toc ol {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  border-left: 2px solid var(--border);
+}
+
+.toc button {
+  display: block;
+  width: 100%;
+  min-height: 36px;
+  /* The coloured line sits on top of the grey one, so it takes 2px of space on the left */
+  margin-left: -2px;
+  padding: 6px 12px;
+  border: 0;
+  border-left: 2px solid transparent;
+  background: none;
+  color: var(--text-soft);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.toc button:hover {
+  color: var(--primary);
+}
+
+.toc button.active {
+  border-left-color: var(--primary);
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* ---- dropdown (phones) ---- */
+
+.jump {
+  display: none;
+}
+
+.jump select {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 6px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.jump select:focus {
+  border-color: var(--primary);
+}
+
+/* ---- the text ---- */
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  line-height: 1.7;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* Keeps a little space above the heading after a jump */
+  scroll-margin-top: 24px;
+}
+
+h2 {
+  color: var(--dark);
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.questions {
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 899px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    margin-top: 28px;
+  }
+
+  .toc {
+    display: none;
+  }
+
+  .jump {
+    display: block;
+  }
+}
+
+@media (max-width: 599px) {
+  .page {
+    padding-top: 32px;
+    padding-bottom: 56px;
+  }
+
+  .head h1 {
+    font-size: 28px;
+  }
+}

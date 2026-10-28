@@ -1,0 +1,205 @@
+:host {
+  display: block;
+  /* --muted is too pale for small text on white, so helper text uses a darker mix of it */
+  --text-soft: color-mix(in srgb, var(--muted) 60%, var(--dark));
+}
+
+.contact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+/* ---- left side ---- */
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 520px;
+}
+
+h2 {
+  color: var(--dark);
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+.lead {
+  color: var(--dark);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.details li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--text);
+}
+
+.label {
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ---- right side: the card ---- */
+
+.card {
+  padding: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--dark) 8%, transparent);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  color: var(--dark);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+input,
+select {
+  min-height: 46px;
+}
+
+textarea {
+  padding: 12px;
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--primary);
+}
+
+.invalid {
+  border-color: var(--error);
+}
+
+/* ---- messages ---- */
+
+.field-error {
+  color: var(--error);
+  font-size: 13px;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.message-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.count {
+  margin-left: auto;
+  color: var(--text-soft);
+  font-size: 13px;
+}
+
+.count.too-long {
+  color: var(--error);
+  font-weight: 700;
+}
+
+.form-error {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--error) 10%, var(--surface));
+  color: color-mix(in srgb, var(--error) 85%, var(--text));
+  font-size: 14px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---- "message sent" ---- */
+
+.sent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 0;
+  text-align: center;
+}
+
+.tick {
+  color: var(--success);
+}
+
+.sent h3 {
+  color: var(--dark);
+  font-size: 24px;
+}
+
+.sent button {
+  margin-top: 12px;
+}
+
+@media (max-width: 899px) {
+  .contact {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .info {
+    max-width: none;
+  }
+}
+
+@media (max-width: 599px) {
+  h2 {
+    font-size: 26px;
+  }
+
+  .card {
+    padding: 20px 16px;
+  }
+
+  form .primary,
+  .sent button {
+    width: 100%;
+  }
+}

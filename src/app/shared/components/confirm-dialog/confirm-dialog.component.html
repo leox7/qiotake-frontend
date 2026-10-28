@@ -1,0 +1,24 @@
+<div class="backdrop" (click)="dismiss()"></div>
+
+<!-- alertdialog: screen readers read the heading and message as soon as it opens -->
+<div
+  #box
+  class="dialog"
+  role="alertdialog"
+  aria-modal="true"
+  aria-labelledby="confirm-dialog-heading"
+  aria-describedby="confirm-dialog-message"
+  (keydown)="keepFocusInside($event, box)"
+>
+  <h2 id="confirm-dialog-heading">{{ heading() }}</h2>
+  <p id="confirm-dialog-message">{{ message() }}</p>
+
+  <div class="buttons">
+    <button #cancelButton class="secondary" type="button" [disabled]="busy()" (click)="dismiss()">
+      {{ cancelLabel() }}
+    </button>
+    <button class="primary" type="button" [disabled]="busy()" (click)="confirmed.emit()">
+      {{ busy() ? 'Please wait...' : confirmLabel() }}
+    </button>
+  </div>
+</div>

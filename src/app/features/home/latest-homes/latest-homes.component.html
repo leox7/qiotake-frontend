@@ -1,0 +1,28 @@
+<section class="latest" aria-labelledby="latest-title">
+  <div class="content">
+    <h2 id="latest-title">Latest available homes</h2>
+
+    @if (loading()) {
+      <span class="visually-hidden">Loading homes...</span>
+      <div class="grid">
+        @for (item of placeholders; track item) {
+          <app-skeleton kind="card" />
+        }
+      </div>
+    } @else if (errorText()) {
+      <app-error-message [message]="errorText()" (retry)="load()" />
+    } @else if (homes().length === 0) {
+      <app-empty-state icon="home" heading="No homes listed yet, check back soon" />
+    } @else {
+      <div class="grid">
+        @for (home of homes(); track home.id) {
+          <app-listing-card [listing]="home" />
+        }
+      </div>
+
+      <div class="more">
+        <a class="secondary" routerLink="/listings">Browse all homes</a>
+      </div>
+    }
+  </div>
+</section>

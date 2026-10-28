@@ -1,0 +1,62 @@
+<div class="content page">
+  <header class="head">
+    <p class="eyebrow">Legal</p>
+    <h1>{{ heading() }}</h1>
+    <p class="updated">Last updated: {{ lastUpdated }}</p>
+  </header>
+
+  <div class="layout">
+    <aside class="toc-area">
+      <!-- Computers: a list that stays on the screen while you scroll -->
+      <nav class="toc" aria-labelledby="toc-title">
+        <p class="toc-title" id="toc-title">On this page</p>
+        <ol>
+          @for (section of sections(); track section.id; let i = $index) {
+            <li>
+              <button
+                type="button"
+                [class.active]="isActive(section.id, i)"
+                [attr.aria-current]="isActive(section.id, i) ? 'location' : null"
+                (click)="goTo(section.id)"
+              >
+                {{ i + 1 }}. {{ section.title }}
+              </button>
+            </li>
+          }
+        </ol>
+      </nav>
+
+      <!-- Phones: the same list as a dropdown that jumps to the section -->
+      <div class="jump">
+        <label for="legal-jump">On this page</label>
+        <select id="legal-jump" (change)="onJump($event)">
+          @for (section of sections(); track section.id; let i = $index) {
+            <option [value]="section.id" [selected]="isActive(section.id, i)">{{ i + 1 }}. {{ section.title }}</option>
+          }
+        </select>
+      </div>
+    </aside>
+
+    <article class="text">
+      @for (section of sections(); track section.id; let i = $index) {
+        <section [id]="section.id">
+          <h2>{{ i + 1 }}. {{ section.title }}</h2>
+          @for (paragraph of section.paragraphs; track $index) {
+            @if (paragraph) {
+              <p>{{ paragraph }}</p>
+            }
+          }
+          @if (section.bullets) {
+            <ul>
+              @for (bullet of section.bullets; track $index) {
+                <li>{{ bullet }}</li>
+              }
+            </ul>
+          }
+        </section>
+      }
+
+      <p class="questions">Still have a question? <a routerLink="/contact">Contact us</a>.</p>
+    </article>
+  </div>
+</div>

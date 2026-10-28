@@ -1,0 +1,21 @@
+@if (totalPages() > 1) {
+  <nav class="pagination" aria-label="Pages">
+    <button class="secondary" type="button" [disabled]="page() === 0" (click)="pageChange.emit(page() - 1)">
+      Previous
+    </button>
+    @for (number of pageNumbers(); track number) {
+      <button
+        class="page-number"
+        type="button"
+        [class.current]="number === page() + 1"
+        [attr.aria-current]="number === page() + 1 ? 'page' : null"
+        (click)="pageChange.emit(number - 1)"
+      >
+        <span class="visually-hidden">Page </span>{{ number }}
+      </button>
+    }
+    <button class="secondary" type="button" [disabled]="page() + 1 >= totalPages()" (click)="pageChange.emit(page() + 1)">
+      Next
+    </button>
+  </nav>
+}

@@ -1,0 +1,41 @@
+<div
+  #dialog
+  class="lightbox"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Photos"
+  (keydown)="keepFocusInside($event, dialog)"
+>
+  <div class="top">
+    <!-- aria-live: screen readers say the new number every time the photo changes -->
+    <p class="counter" aria-live="polite">{{ index() + 1 }} / {{ photos().length }}</p>
+    <button #closeButton class="round" type="button" (click)="closed.emit()">
+      <span class="visually-hidden">Close photos</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="stage" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+    @if (photos().length > 1) {
+      <button class="round arrow" type="button" (click)="previous()">
+        <span class="visually-hidden">Previous photo</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 5l-7 7 7 7" />
+        </svg>
+      </button>
+    }
+
+    <img [src]="photos()[index()]" [alt]="title() + ', photo ' + (index() + 1) + ' of ' + photos().length" />
+
+    @if (photos().length > 1) {
+      <button class="round arrow" type="button" (click)="next()">
+        <span class="visually-hidden">Next photo</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    }
+  </div>
+</div>

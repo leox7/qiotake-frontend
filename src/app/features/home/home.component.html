@@ -1,3 +1,51 @@
-<section class="content">
-  <h1>Home</h1>
+<!-- The only h1 of the page is inside the hero. Every section below has an h2. -->
+<app-hero [totalAvailable]="summary()?.totalAvailable ?? null" />
+
+<app-room-types [summary]="summary()" [errorText]="summaryError()" (retry)="loadSummary()" />
+
+<app-latest-homes />
+
+<!-- id="how-it-works": the "How it works" links in the navbar and footer scroll here -->
+<section id="how-it-works" class="how" aria-labelledby="how-title">
+  <div class="content">
+    <p class="eyebrow">Simple steps</p>
+    <h2 id="how-title">How it works</h2>
+
+    <ol class="steps">
+      <li>
+        <span class="step-number" aria-hidden="true">1</span>
+        <h3>Search</h3>
+        <p>Browse homes near KCA. Filter by area, room type and your monthly budget.</p>
+      </li>
+      <li>
+        <span class="step-number" aria-hidden="true">2</span>
+        <h3>Request</h3>
+        <p>Choose your move-in and move-out dates and send a booking request. It costs nothing, and the landlord reviews it.</p>
+      </li>
+      <li>
+        <span class="step-number" aria-hidden="true">3</span>
+        <h3>Pay</h3>
+        <p>
+          Once the landlord confirms your booking, pay your deposit with M-Pesa on your phone.
+          You pay only after the landlord has said yes.
+        </p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<app-landlord-cta />
+
+<section id="faq" class="faq-section" aria-labelledby="faq-title">
+  <div class="content">
+    <p class="eyebrow">Help</p>
+    <h2 id="faq-title">Frequently asked <span class="accent-word">questions</span></h2>
+    <app-faq />
+  </div>
+</section>
+
+<section id="contact" class="contact-section">
+  <div class="content">
+    <app-contact />
+  </div>
 </section>

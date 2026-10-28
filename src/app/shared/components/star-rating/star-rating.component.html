@@ -1,0 +1,8 @@
+<!-- Two rows of 5 stars on top of each other: grey ones below, yellow ones above, cut to the rating -->
+<span class="stars" role="img" [attr.aria-label]="label()">
+  <span class="row empty" aria-hidden="true">★★★★★</span>
+  <span class="row filled" aria-hidden="true" [style.width.%]="percent()">★★★★★</span>
+</span>
+@if (count() !== null) {
+  <span class="text">{{ rating() }} ({{ count() }})</span>
+}

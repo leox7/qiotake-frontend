@@ -1,3 +1,183 @@
-<section class="content">
-  <h1>Profile</h1>
+<section class="content page">
+  @if (showOwnHeader) {
+    <header class="intro">
+      <p class="eyebrow">Account settings</p>
+      <h1>My profile</h1>
+    </header>
+  }
+
+  @if (errorText()) {
+    <app-error-message [message]="errorText()" (retry)="load()" />
+  } @else if (loading()) {
+    <span class="visually-hidden">Loading your profile...</span>
+    <div class="layout">
+      <app-skeleton kind="card" />
+      <div class="cards">
+        <app-skeleton kind="card" />
+        <app-skeleton kind="card" />
+      </div>
+    </div>
+  } @else if (profile(); as p) {
+    <div class="layout">
+      <!-- Summary card: on a phone it sits above the setting cards -->
+      <section class="card summary" aria-label="Account summary">
+        <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+        <h2>{{ p.firstName }} {{ p.lastName }}</h2>
+        <span class="role-badge">{{ roleLabel() }}</span>
+        @if (memberSince()) {
+          <p class="muted">Member since {{ memberSince() }}</p>
+        }
+      </section>
+
+      <div class="cards">
+        <!-- Personal details: read mode, or the name form after "Edit name" -->
+        <section class="card" aria-labelledby="details-title">
+          <div class="card-head">
+            <h2 id="details-title">Personal details</h2>
+            @if (!editing()) {
+              <button #editButton class="secondary" type="button" (click)="startEditing()">Edit name</button>
+            }
+          </div>
+
+          @if (editing()) {
+            <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+              <div class="grid">
+                <div class="field">
+                  <label for="profile-first-name">First name</label>
+                  <input
+                    #firstNameInput
+                    id="profile-first-name"
+                    type="text"
+                    autocomplete="given-name"
+                    formControlName="firstName"
+                    [attr.aria-invalid]="!!nameError(form.controls.firstName, 'First name')"
+                    aria-describedby="profile-first-name-error"
+                  />
+                  <p id="profile-first-name-error" class="field-error">{{ nameError(form.controls.firstName, 'First name') }}</p>
+                </div>
+
+                <div class="field">
+                  <label for="profile-last-name">Last name</label>
+                  <input
+                    id="profile-last-name"
+                    type="text"
+                    autocomplete="family-name"
+                    formControlName="lastName"
+                    [attr.aria-invalid]="!!nameError(form.controls.lastName, 'Last name')"
+                    aria-describedby="profile-last-name-error"
+                  />
+                  <p id="profile-last-name-error" class="field-error">{{ nameError(form.controls.lastName, 'Last name') }}</p>
+                </div>
+
+                <div class="field wide">
+                  <span class="label">Email</span>
+                  <p class="value">{{ p.email }} <span class="tag">Locked</span></p>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button class="secondary" type="button" [disabled]="saving()" (click)="cancelEditing()">Cancel</button>
+                <button class="primary" type="submit" [disabled]="saving()">
+                  {{ saving() ? 'Saving...' : 'Save changes' }}
+                </button>
+              </div>
+            </form>
+          } @else {
+            <dl class="grid">
+              <div class="field">
+                <dt class="label">First name</dt>
+                <dd class="value">{{ p.firstName }}</dd>
+              </div>
+              <div class="field">
+                <dt class="label">Last name</dt>
+                <dd class="value">{{ p.lastName }}</dd>
+              </div>
+              <div class="field wide">
+                <dt class="label">Email</dt>
+                <dd class="value">{{ p.email }} <span class="tag">Locked</span></dd>
+              </div>
+            </dl>
+          }
+        </section>
+
+        <!-- Role card: what is shown depends on the role -->
+        @switch (p.role) {
+          @case ('STUDENT') {
+            <section class="card" aria-labelledby="role-title">
+              <h2 id="role-title">Student details</h2>
+              <dl class="grid">
+                <div class="field wide">
+                  <dt class="label">University</dt>
+                  <dd class="value">{{ p.university }}</dd>
+                </div>
+              </dl>
+              <dl class="stats">
+                <div>
+                  <dd>{{ p.activeBookings ?? 0 }}</dd>
+                  <dt>Active booking</dt>
+                </div>
+                <div>
+                  <dd>{{ p.pendingRequests ?? 0 }}</dd>
+                  <dt>Pending requests</dt>
+                </div>
+                <div>
+                  <dd>{{ p.paymentsMade ?? 0 }}</dd>
+                  <dt>Payments made</dt>
+                </div>
+              </dl>
+            </section>
+          }
+
+          @case ('LANDLORD') {
+            <section class="card" aria-labelledby="role-title">
+              <h2 id="role-title">Landlord details</h2>
+              <!-- The backend already hides most digits. We show the text exactly as it comes. -->
+              <dl class="grid">
+                <div class="field">
+                  <dt class="label">Phone number</dt>
+                  <dd class="value">{{ p.phoneNumber }}</dd>
+                </div>
+                <div class="field">
+                  <dt class="label">National ID</dt>
+                  <dd class="value">{{ p.nationalIdNumber }}</dd>
+                </div>
+                <div class="field">
+                  <dt class="label">Account status</dt>
+                  <dd class="value">
+                    @if (p.verified) {
+                      <span class="tag good">Verified</span>
+                    } @else {
+                      <span class="tag waiting">Not active yet</span>
+                    }
+                  </dd>
+                </div>
+                <div class="field">
+                  <dt class="label">Listings</dt>
+                  <dd class="value">{{ p.listingCount ?? 0 }}</dd>
+                </div>
+              </dl>
+              @if (!p.verified) {
+                <p class="note">Your account becomes active after you post your first listing.</p>
+              }
+            </section>
+          }
+
+          @case ('ADMIN') {
+            <section class="card" aria-labelledby="role-title">
+              <h2 id="role-title">Administrator account</h2>
+              <p class="muted">You can manage QiotaKE with this account.</p>
+            </section>
+          }
+        }
+
+        <section class="card" aria-labelledby="security-title">
+          <h2 id="security-title">Security</h2>
+          <div class="security">
+            <p class="muted">Sessions end after 7 days.</p>
+            <button class="secondary logout" type="button" (click)="logout()">Log out of this device</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  }
 </section>

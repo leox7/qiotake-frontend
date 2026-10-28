@@ -1,0 +1,143 @@
+:host {
+  display: block;
+  background: linear-gradient(
+    160deg,
+    var(--bg) 0%,
+    color-mix(in srgb, var(--focus) 35%, var(--surface)) 100%
+  );
+}
+
+.hero {
+  padding: 64px 0 80px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 56px;
+  align-items: center;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+h1 {
+  color: var(--dark);
+  font-size: 52px;
+  line-height: 1.1;
+}
+
+.accent-word {
+  color: var(--primary);
+}
+
+.lead {
+  max-width: 520px;
+  color: var(--dark);
+  font-size: 18px;
+}
+
+/* The home page search bar has less room than the browse page: two columns instead of four */
+app-search-bar {
+  --search-columns: 1fr 1fr;
+  margin-top: 8px;
+}
+
+.trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trust li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--dark);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.trust svg {
+  color: var(--success);
+}
+
+/* ---- the picture ---- */
+
+/*
+ * The photo is a CSS background, with a soft gradient underneath it. If public/images/hero.jpg
+ * does not exist the browser skips the photo, and the gradient is what you see.
+ */
+.visual {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  max-height: 560px;
+  width: 100%;
+  border-radius: calc(var(--radius-lg) * 2);
+  background:
+    url('/images/hero.jpg') center / cover no-repeat,
+    linear-gradient(160deg, color-mix(in srgb, var(--focus) 70%, var(--surface)), var(--primary));
+}
+
+.float-card {
+  position: absolute;
+  left: -24px;
+  bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--dark) 15%, transparent);
+  color: var(--dark);
+  font-weight: 500;
+}
+
+.number {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+@media (max-width: 1023px) {
+  h1 {
+    font-size: 42px;
+  }
+}
+
+/* Tablets and phones: one column, no picture */
+@media (max-width: 899px) {
+  .hero {
+    padding: 40px 0 48px;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .visual {
+    display: none;
+  }
+}
+
+@media (max-width: 599px) {
+  h1 {
+    font-size: 34px;
+  }
+
+  .lead {
+    font-size: 16px;
+  }
+
+  .trust {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

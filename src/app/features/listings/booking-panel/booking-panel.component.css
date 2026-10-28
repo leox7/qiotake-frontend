@@ -1,0 +1,149 @@
+:host {
+  display: block;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+h2 {
+  font-size: 22px;
+  color: var(--dark);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.center {
+  text-align: center;
+}
+
+.price {
+  color: var(--muted);
+}
+
+.price strong {
+  font-size: 24px;
+  color: var(--dark);
+}
+
+.note {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--warning) 12%, var(--surface));
+  color: color-mix(in srgb, var(--warning) 60%, var(--text));
+  font-size: 14px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+
+input:focus {
+  border-color: var(--primary);
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+input:disabled {
+  background: color-mix(in srgb, var(--muted) 12%, var(--surface));
+  cursor: not-allowed;
+}
+
+/* Empty paragraphs take no room, so the form does not jump until there is a message */
+.field-error {
+  color: var(--error);
+  font-size: 13px;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.request-error {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--error) 10%, var(--surface));
+  color: color-mix(in srgb, var(--error) 85%, var(--text));
+  font-size: 14px;
+}
+
+.submit {
+  width: 100%;
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---- success ---- */
+
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.tick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--success) 14%, var(--surface));
+  color: var(--success);
+}
+
+.success .primary {
+  width: 100%;
+}
+
+@media (max-width: 400px) {
+  .dates {
+    grid-template-columns: 1fr;
+  }
+}

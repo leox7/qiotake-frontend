@@ -1,0 +1,284 @@
+:host {
+  display: block;
+}
+
+/* The colours of the sidebar. The "dark" class (admins) only swaps these values. */
+.portal {
+  --side-bg: var(--surface);
+  --side-text: var(--dark);
+  --side-muted: var(--muted);
+  --side-line: var(--border);
+  --side-hover-bg: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  --side-active-bg: color-mix(in srgb, var(--primary) 14%, var(--surface));
+  --side-active-text: var(--primary);
+  --side-avatar-bg: var(--primary);
+
+  display: grid;
+  grid-template-columns: 245px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.portal.dark {
+  --side-bg: var(--dark);
+  --side-text: var(--surface);
+  --side-muted: color-mix(in srgb, var(--surface) 60%, transparent);
+  --side-line: color-mix(in srgb, var(--surface) 15%, transparent);
+  --side-hover-bg: color-mix(in srgb, var(--surface) 8%, transparent);
+  --side-active-bg: color-mix(in srgb, var(--surface) 16%, transparent);
+  --side-active-text: var(--surface);
+  --side-avatar-bg: var(--primary);
+}
+
+/* ---------- Sidebar (wide screens: always visible, stays in place while the page scrolls) ---------- */
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 24px 16px;
+  background: var(--side-bg);
+  border-right: 1px solid var(--side-line);
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 0 8px 24px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  color: var(--side-text);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.menu a:hover {
+  background: var(--side-hover-bg);
+}
+
+/* The small number next to a label, for example the requests waiting */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  margin-left: auto;
+  padding: 0 6px;
+  border-radius: 11px;
+  background: var(--warning);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* The page you are on */
+.menu a.active {
+  background: var(--side-active-bg);
+  color: var(--side-active-text);
+  font-weight: 700;
+}
+
+/* ---------- Profile block (pushed to the bottom by margin-top: auto) ---------- */
+
+.profile {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: center;
+  gap: 4px 12px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid var(--side-line);
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--side-avatar-bg);
+  color: var(--surface);
+  font-weight: 700;
+}
+
+.who {
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  color: var(--side-text);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.role {
+  color: var(--side-muted);
+  font-size: 13px;
+}
+
+.logout {
+  grid-column: 1 / -1;
+  min-height: 40px;
+  margin-top: 8px;
+  border: 1px solid var(--side-line);
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--side-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.logout:hover {
+  background: var(--side-hover-bg);
+}
+
+/* ---------- Main area ---------- */
+
+/* min-width: 0 lets a wide table scroll inside its own card instead of stretching the whole page */
+.main {
+  min-width: 0;
+  padding: 32px 32px 48px;
+}
+
+.page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+h1 {
+  font-size: 32px;
+  line-height: 1.2;
+  color: var(--dark);
+}
+
+/* ---------- Top bar and backdrop (only used under 1024px) ---------- */
+
+.topbar,
+.backdrop {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .portal {
+    display: block;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: 64px;
+    padding: 0 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hamburger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--dark);
+    cursor: pointer;
+  }
+
+  /* The sidebar becomes a drawer: parked off screen to the left, slides in when it has the class "open".
+     visibility: hidden also keeps the keyboard from tabbing into a drawer nobody can see. */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    width: min(285px, 85vw);
+    height: auto;
+    border-right: 0;
+    box-shadow: 0 0 32px color-mix(in srgb, var(--dark) 25%, transparent);
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.25s ease,
+      visibility 0.25s;
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: color-mix(in srgb, var(--dark) 50%, transparent);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .backdrop.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .main {
+    padding: 24px 16px 40px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 599px) {
+  /* The header button gets the full width on a phone */
+  .page-header .primary {
+    width: 100%;
+  }
+}
+
+/* People who asked their device for less motion get no sliding */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .backdrop {
+    transition: none;
+  }
+}

@@ -3,6 +3,18 @@ import { HttpErrorResponse } from '@angular/common/http';
 const GENERIC_MESSAGE = 'Something went wrong. Please try again.';
 
 /**
+ * Should a page show its own toast for this failed call?
+ * Status 0 (no connection), 403 and 5xx already get a toast from error.interceptor.ts,
+ * so a page must not show a second one. Everything else (400, 404, 409 ...) is the page's job.
+ */
+export function shouldToastHere(error: unknown): boolean {
+  if (!(error instanceof HttpErrorResponse)) {
+    return true;
+  }
+  return error.status !== 0 && error.status !== 403 && error.status < 500;
+}
+
+/**
  * Turns whatever went wrong with a backend call into ONE sentence a person can read.
  *
  * The backend sends errors in one of two shapes (see GlobalExceptionHandler):

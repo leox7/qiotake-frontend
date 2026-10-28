@@ -7,6 +7,11 @@
       <div class="line short shimmer"></div>
     </div>
   </div>
+} @else if (kind() === 'stat') {
+  <div class="stat" aria-hidden="true">
+    <div class="line medium shimmer"></div>
+    <div class="line big shimmer"></div>
+  </div>
 } @else {
   <div class="row" aria-hidden="true" [style.grid-template-columns]="'repeat(' + columns() + ', 1fr)'">
     @for (cell of cells(); track cell) {

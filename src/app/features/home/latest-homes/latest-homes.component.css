@@ -1,0 +1,46 @@
+:host {
+  display: block;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.latest {
+  padding: 72px 0;
+}
+
+h2 {
+  margin-bottom: 24px;
+  color: var(--dark);
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+/* As many columns as fit (at least 260px each). On a phone that is one column, and all three cards are listed one under the other. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+@media (max-width: 899px) {
+  .latest {
+    padding: 48px 0;
+  }
+}
+
+@media (max-width: 599px) {
+  h2 {
+    font-size: 26px;
+  }
+
+  .more .secondary {
+    width: 100%;
+  }
+}

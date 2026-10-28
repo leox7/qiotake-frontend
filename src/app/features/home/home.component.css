@@ -1,4 +1,100 @@
 :host {
   display: block;
-  padding: 48px 0;
+}
+
+h2 {
+  color: var(--dark);
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+/* ---- How it works (dark) ---- */
+
+.how {
+  padding: 72px 0;
+  background: var(--dark);
+  color: var(--surface);
+}
+
+.how .eyebrow {
+  /* --primary is too dark to read on the dark background, so this label uses the light focus colour */
+  color: var(--focus);
+}
+
+.how h2 {
+  margin-top: 8px;
+  color: var(--surface);
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 32px;
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.steps li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--focus);
+  color: var(--dark);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.steps h3 {
+  font-size: 22px;
+}
+
+.steps p {
+  max-width: 340px;
+  color: color-mix(in srgb, var(--surface) 85%, var(--dark));
+}
+
+/* ---- FAQ and contact ---- */
+
+.faq-section {
+  padding: 72px 0;
+}
+
+.faq-section h2 {
+  margin: 8px 0 24px;
+}
+
+.contact-section {
+  padding: 72px 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 899px) {
+  .how,
+  .faq-section,
+  .contact-section {
+    padding: 48px 0;
+  }
+
+  .steps {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    margin-top: 28px;
+  }
+}
+
+@media (max-width: 599px) {
+  h2 {
+    font-size: 26px;
+  }
 }

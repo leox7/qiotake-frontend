@@ -14,7 +14,8 @@ export class PageTitleService {
   private readonly title = inject(Title);
 
   set(page: string): void {
-    this.title.setTitle(`${page} | QiotaKE`);
+    // The home page title already starts with the brand name, so it is not added a second time
+    this.title.setTitle(page.startsWith('QiotaKE') ? page : `${page} | QiotaKE`);
   }
 
   /** Used when a route has no title of its own. */

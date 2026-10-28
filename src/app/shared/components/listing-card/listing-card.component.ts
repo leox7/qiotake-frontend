@@ -3,6 +3,7 @@ import { Component, computed, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Listing, ROOM_TYPE_LABELS } from '../../../core/models/listing.model';
 import { getImageUrl } from '../../../core/utils/image-url';
+import { StarRatingComponent } from '../star-rating/star-rating.component';
 import { StatusBadgeComponent } from '../status-badge/status-badge.component';
 
 /**
@@ -11,7 +12,7 @@ import { StatusBadgeComponent } from '../status-badge/status-badge.component';
  */
 @Component({
   selector: 'app-listing-card',
-  imports: [RouterLink, DecimalPipe, StatusBadgeComponent],
+  imports: [RouterLink, DecimalPipe, StarRatingComponent, StatusBadgeComponent],
   templateUrl: './listing-card.component.html',
   styleUrl: './listing-card.component.css',
 })

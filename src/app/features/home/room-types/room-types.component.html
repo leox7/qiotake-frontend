@@ -1,0 +1,36 @@
+<section class="room-types" aria-labelledby="room-types-title">
+  <div class="content">
+    <div class="head">
+      <h2 id="room-types-title">What are you looking for?</h2>
+      <a routerLink="/listings">View all homes</a>
+    </div>
+
+    @if (errorText()) {
+      <app-error-message [message]="errorText()" (retry)="retry.emit()" />
+    } @else if (summary(); as data) {
+      <ul class="grid">
+        @for (row of data.roomTypes; track row.roomType) {
+          <li>
+            <!-- A card with no homes is muted, but it still opens the browse page with that type chosen -->
+            <a class="card" [class.empty]="row.availableCount === 0" routerLink="/listings" [queryParams]="{ type: row.roomType }">
+              <span class="name">{{ labels[row.roomType] }}</span>
+              @if (row.availableCount > 0 && row.lowestPrice !== null) {
+                <span class="price">From KES {{ row.lowestPrice | number: '1.0-0' }}</span>
+                <span class="count">{{ row.availableCount }} {{ row.availableCount === 1 ? 'home' : 'homes' }}</span>
+              } @else {
+                <span class="price">No homes right now</span>
+              }
+            </a>
+          </li>
+        }
+      </ul>
+    } @else {
+      <span class="visually-hidden">Loading room types...</span>
+      <ul class="grid">
+        @for (item of placeholders; track item) {
+          <li><app-skeleton kind="row" [columns]="1" /></li>
+        }
+      </ul>
+    }
+  </div>
+</section>

@@ -44,7 +44,7 @@ export class AuthStateService {
     this.user.set(user);
   }
 
-  /** Forgets the tokens and the user. (Real logout, with the backend call, comes in prompt 05.) */
+  /** Forgets the tokens and the user on this device. For a real logout use SessionService.logout(), which also tells the backend. */
   signOut(): void {
     this.tokens.clear();
     this.user.set(null);

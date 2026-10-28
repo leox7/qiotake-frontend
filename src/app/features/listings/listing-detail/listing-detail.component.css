@@ -1,4 +1,150 @@
 :host {
   display: block;
-  padding: 48px 0;
+  padding: 32px 0 64px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-bottom: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back:hover {
+  text-decoration: underline;
+}
+
+/* ---- two columns: details on the left, booking panel on the right ---- */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 40px;
+  align-items: start;
+  margin-top: 32px;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* The panel stays in view while the visitor scrolls down the details */
+.side {
+  position: sticky;
+  top: 24px;
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+h1 {
+  font-size: 36px;
+  line-height: 1.2;
+  color: var(--dark);
+}
+
+.rating {
+  font-size: 20px;
+}
+
+.location {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.pill {
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.block {
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+h2 {
+  margin-bottom: 8px;
+  font-size: 20px;
+  color: var(--dark);
+}
+
+.description {
+  white-space: pre-line;
+}
+
+.host {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--surface);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.host-name {
+  font-weight: 700;
+  color: var(--dark);
+}
+
+/* ---- phones: one column, the booking panel first ---- */
+@media (max-width: 799px) {
+  :host {
+    padding-top: 16px;
+  }
+
+  .layout {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  .side {
+    position: static;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .details {
+    grid-row: 2;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
 }

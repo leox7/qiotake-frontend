@@ -1,0 +1,54 @@
+:host {
+  display: block;
+  padding: 72px 0;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 40px;
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius-lg) * 1.5);
+}
+
+h2 {
+  color: var(--dark);
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+p {
+  color: var(--dark);
+  font-size: 18px;
+}
+
+.primary {
+  margin-top: 8px;
+}
+
+@media (max-width: 899px) {
+  :host {
+    padding: 48px 0;
+  }
+}
+
+@media (max-width: 599px) {
+  .box {
+    padding: 24px 20px;
+  }
+
+  h2 {
+    font-size: 26px;
+  }
+
+  p {
+    font-size: 16px;
+  }
+
+  .primary {
+    width: 100%;
+  }
+}

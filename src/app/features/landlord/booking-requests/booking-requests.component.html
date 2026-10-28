@@ -1,0 +1,155 @@
+@if (actionError()) {
+  <p class="notice error" role="alert">
+    <span><strong>Could not confirm the booking.</strong> {{ actionError() }}</span>
+    <button class="text-button" type="button" (click)="actionError.set('')">Dismiss</button>
+  </p>
+}
+
+@if (error()) {
+  <app-error-message [message]="error()" (retry)="load()" />
+} @else if (loading()) {
+  <span class="visually-hidden">Loading your booking requests...</span>
+  <div class="table-card">
+    @for (row of skeletonRows; track row) {
+      <app-skeleton kind="row" [columns]="5" />
+    }
+  </div>
+} @else if (counts().ALL === 0) {
+  <app-empty-state
+    icon="calendar"
+    heading="No booking requests yet"
+    text="When a student asks to rent one of your homes, the request shows here."
+    buttonLabel="Go to my listings"
+    buttonLink="/landlord/listings"
+  />
+} @else {
+  <!-- ---------- Tabs with counts ---------- -->
+  <div class="tabs" role="group" aria-label="Show requests">
+    @for (item of tabs(); track item.key) {
+      <button
+        class="tab"
+        type="button"
+        [class.active]="tab() === item.key"
+        [attr.aria-pressed]="tab() === item.key"
+        (click)="selectTab(item.key)"
+      >
+        {{ item.label }}
+        <span class="count" [class.attention]="item.key === 'PENDING' && item.count > 0">{{ item.count }}</span>
+      </button>
+    }
+  </div>
+
+  @if (rows().length === 0) {
+    <app-empty-state icon="calendar" [heading]="emptyText().heading" [text]="emptyText().text" />
+  } @else {
+    <div class="table-card">
+      <table class="portal-table">
+        <thead>
+          <tr>
+            <th scope="col">Student</th>
+            <th scope="col">Listing</th>
+            <th scope="col">Dates</th>
+            <th scope="col">Requested</th>
+            <th scope="col">Status</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (booking of rows(); track booking.id) {
+            <tr [class.needs-answer]="booking.status === 'PENDING'">
+              <td data-label="Student" class="strong">{{ booking.studentFirstName }}</td>
+              <td data-label="Listing">{{ booking.listingTitle }}</td>
+              <td data-label="Dates" class="nowrap">{{ dateRange(booking) }}</td>
+              <td data-label="Requested" class="nowrap">{{ requestedOn(booking) }}</td>
+              <td data-label="Status"><app-status-badge [status]="booking.status" /></td>
+              <td>
+                <div class="row-actions">
+                  <button class="text-button" type="button" (click)="openView(booking, $event)">
+                    View<span class="visually-hidden"> the request from {{ booking.studentFirstName }}</span>
+                  </button>
+                  @if (booking.status === 'PENDING') {
+                    <button
+                      class="primary small"
+                      type="button"
+                      [disabled]="busyId() !== null"
+                      (click)="openConfirm(booking, $event)"
+                    >
+                      Confirm booking<span class="visually-hidden"> for {{ booking.studentFirstName }}</span>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [page]="page()" [totalPages]="totalPages()" (pageChange)="page.set($event)" />
+  }
+}
+
+<!-- ---------- Confirm box ---------- -->
+@if (confirmTarget(); as booking) {
+  <app-confirm-dialog
+    heading="Confirm this booking?"
+    [message]="'You are confirming ' + booking.studentFirstName + ' for &quot;' + booking.listingTitle + '&quot; (' + dateRange(booking) + '). The student will be emailed your phone number so they can contact you.'"
+    confirmLabel="Confirm booking"
+    cancelLabel="Not now"
+    [busy]="busyId() !== null"
+    (confirmed)="confirm()"
+    (dismissed)="closeConfirm()"
+  />
+}
+
+<!-- ---------- Side panel with all the details ---------- -->
+@if (viewTarget(); as booking) {
+  <div class="backdrop" (click)="closeView()"></div>
+  <aside class="panel" role="dialog" aria-modal="true" aria-labelledby="panel-title">
+    <div class="panel-head">
+      <h2 id="panel-title">Booking request #{{ booking.id }}</h2>
+      <button class="panel-close text-button" type="button" (click)="closeView()">Close</button>
+    </div>
+
+    <dl class="details">
+      <div>
+        <dt>Status</dt>
+        <dd><app-status-badge [status]="booking.status" /></dd>
+      </div>
+      <div>
+        <dt>Student</dt>
+        <dd>{{ booking.studentFirstName }}</dd>
+      </div>
+      <div>
+        <dt>Listing</dt>
+        <dd>
+          <a [routerLink]="['/listings', booking.listingId]">{{ booking.listingTitle }}</a>
+        </dd>
+      </div>
+      <div>
+        <dt>Location</dt>
+        <dd>{{ booking.listingLocation }}</dd>
+      </div>
+      <div>
+        <dt>Move in</dt>
+        <dd>{{ day(booking.startDate) }}</dd>
+      </div>
+      <div>
+        <dt>Move out</dt>
+        <dd>{{ day(booking.endDate) }}</dd>
+      </div>
+      <div>
+        <dt>Length of stay</dt>
+        <dd>{{ stayLength(booking) }}</dd>
+      </div>
+      <div>
+        <dt>Requested on</dt>
+        <dd>{{ requestedOn(booking) }}</dd>
+      </div>
+    </dl>
+
+    <p class="hint">
+      The student's contact details are not shown here. They get your phone number by email when you confirm.
+    </p>
+  </aside>
+}

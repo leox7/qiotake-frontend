@@ -25,6 +25,10 @@
     </h3>
     <p class="location">{{ listing().location }}</p>
 
+    @if (listing().averageRating !== null && listing().reviewCount > 0) {
+      <app-star-rating class="rating" [rating]="listing().averageRating!" [count]="listing().reviewCount" />
+    }
+
     <div class="meta">
       <span class="pill">{{ roomTypeLabel() }}</span>
       @if (listing().landlordFirstName) {

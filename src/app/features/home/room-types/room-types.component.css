@@ -1,0 +1,104 @@
+:host {
+  display: block;
+}
+
+.room-types {
+  padding: 72px 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 24px;
+  margin-bottom: 24px;
+}
+
+h2 {
+  color: var(--dark);
+  font-size: 32px;
+  line-height: 1.2;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  min-height: 120px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.card:hover {
+  border-color: var(--primary);
+}
+
+.name {
+  color: var(--dark);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.price {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.count {
+  color: color-mix(in srgb, var(--muted) 60%, var(--dark));
+  font-size: 14px;
+}
+
+/* No homes of this type: quieter colours */
+.card.empty {
+  background: color-mix(in srgb, var(--border) 15%, var(--bg));
+}
+
+.card.empty .name,
+.card.empty .price {
+  color: color-mix(in srgb, var(--muted) 60%, var(--dark));
+}
+
+.card.empty .price {
+  font-weight: 400;
+}
+
+@media (max-width: 899px) {
+  .room-types {
+    padding: 48px 0;
+  }
+
+  /* Tablets and phones: two columns */
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 599px) {
+  h2 {
+    font-size: 26px;
+  }
+
+  .card {
+    padding: 16px;
+  }
+
+  .name {
+    font-size: 18px;
+  }
+}

@@ -1,3 +1,133 @@
-<section class="content">
-  <h1>Listings</h1>
+<section class="content page">
+  <header class="intro">
+    <p class="eyebrow">Browse homes</p>
+    <h1>Find your next <span class="accent-word">place</span></h1>
+    <p class="lead">Homes within easy reach of KCA University</p>
+  </header>
+
+  <app-search-bar [initial]="searchValues()" (searched)="onSearch($event)" />
+
+  <div class="layout">
+    <!-- Filters on the left. Hidden on phones, where the "Filters" button opens a drawer instead -->
+    <aside class="sidebar" aria-label="Filters">
+      <app-listing-filters idPrefix="side" [filters]="filters()" (changed)="applyFilters($event)" />
+    </aside>
+
+    <section class="results" #resultsTop aria-label="Results">
+      <div class="result-bar">
+        <!-- aria-live makes screen readers say the new total after every search -->
+        <p class="count" aria-live="polite">
+          @if (result(); as data) {
+            <strong>{{ data.totalElements }}</strong>
+            {{ data.totalElements === 1 ? 'home' : 'homes' }} near KCA University
+          } @else if (!errorText()) {
+            Loading homes...
+          }
+        </p>
+
+        <button
+          #filtersButton
+          class="secondary filters-button"
+          type="button"
+          aria-haspopup="dialog"
+          (click)="openDrawer()"
+        >
+          Filters @if (chips().length > 0) { ({{ chips().length }}) }
+        </button>
+      </div>
+
+      @if (chips().length > 0) {
+        <ul class="chips" aria-label="Active filters">
+          @for (chip of chips(); track chip.key) {
+            <li class="chip">
+              {{ chip.label }}
+              <button type="button" (click)="removeChip(chip.key)">
+                <span class="visually-hidden">Remove filter {{ chip.label }}</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            </li>
+          }
+          <li><button class="clear-link" type="button" (click)="clearAll()">Clear all</button></li>
+        </ul>
+      }
+
+      @if (errorText()) {
+        <app-error-message [message]="errorText()" (retry)="load()" />
+      } @else if (result(); as data) {
+        @if (data.content.length === 0) {
+          @if (chips().length > 0) {
+            <app-empty-state
+              icon="search"
+              heading="No homes match your filters"
+              text="Try a bigger budget or fewer filters."
+              buttonLabel="Clear filters"
+              (buttonClick)="clearAll()"
+            />
+          } @else {
+            <app-empty-state icon="home" heading="No homes listed yet" text="Please check again soon." />
+          }
+        } @else {
+          <!-- While the next page loads, the old homes stay on screen, dimmed, so the page does not flicker -->
+          <div class="grid" [class.dimmed]="loading()" [attr.aria-busy]="loading()">
+            @for (listing of data.content; track listing.id) {
+              <app-listing-card [listing]="listing" />
+            }
+          </div>
+
+          @if (data.totalPages > 1) {
+            <nav class="pagination" aria-label="Pages">
+              <button class="secondary" type="button" [disabled]="data.page === 0" (click)="goToPage(data.page)">
+                Previous
+              </button>
+              @for (number of pageNumbers(); track number) {
+                <button
+                  class="page-number"
+                  type="button"
+                  [class.current]="number === data.page + 1"
+                  [attr.aria-current]="number === data.page + 1 ? 'page' : null"
+                  (click)="goToPage(number)"
+                >
+                  <span class="visually-hidden">Page </span>{{ number }}
+                </button>
+              }
+              <button class="secondary" type="button" [disabled]="data.last" (click)="goToPage(data.page + 2)">
+                Next
+              </button>
+            </nav>
+          }
+        }
+      } @else {
+        <!-- First load: grey cards in the shape of the real ones -->
+        <div class="grid">
+          <span class="visually-hidden">Loading homes...</span>
+          @for (card of skeletonCards; track card) {
+            <app-skeleton kind="card" />
+          }
+        </div>
+      }
+    </section>
+  </div>
 </section>
+
+<!-- The phone drawer. It slides up from the bottom and works on a copy (draft) of the filters until "Apply" -->
+@if (drawerOpen()) {
+  <div class="backdrop" (click)="closeDrawer()"></div>
+  <div class="drawer" role="dialog" aria-modal="true" aria-label="Filters">
+    <div class="drawer-top">
+      <button #drawerClose class="close" type="button" (click)="closeDrawer()">
+        <span class="visually-hidden">Close filters</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </div>
+    <div class="drawer-body">
+      <app-listing-filters idPrefix="drawer" [filters]="draft()" (changed)="draft.set($event)" />
+    </div>
+    <div class="drawer-bottom">
+      <button class="primary" type="button" (click)="applyDrawer()">Apply</button>
+    </div>
+  </div>
+}

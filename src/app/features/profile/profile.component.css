@@ -1,4 +1,302 @@
 :host {
   display: block;
-  padding: 48px 0;
+  padding: 48px 0 64px;
+}
+
+/* Inside the landlord or admin portal: the layout already gives the spacing and the width */
+:host(.in-portal) {
+  padding: 0;
+}
+
+:host(.in-portal) .content {
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+h1 {
+  font-size: 40px;
+  line-height: 1.15;
+  color: var(--dark);
+}
+
+/* ---- summary card on the left, setting cards on the right ---- */
+
+.layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-width: 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.card h2 {
+  font-size: 20px;
+  color: var(--dark);
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ---- summary ---- */
+
+.summary {
+  align-items: center;
+  text-align: center;
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--surface);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.role-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ---- label and value pairs ---- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.field.wide {
+  grid-column: 1 / -1;
+}
+
+.label,
+label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.value {
+  margin: 0;
+  color: var(--dark);
+  overflow-wrap: anywhere;
+}
+
+.tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--muted) 18%, var(--surface));
+  color: var(--dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tag.good {
+  margin-left: 0;
+  background: color-mix(in srgb, var(--success) 14%, var(--surface));
+  color: color-mix(in srgb, var(--success) 85%, var(--text));
+}
+
+.tag.waiting {
+  margin-left: 0;
+  background: color-mix(in srgb, var(--warning) 14%, var(--surface));
+  color: color-mix(in srgb, var(--warning) 70%, var(--text));
+}
+
+.note {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--warning) 10%, var(--surface));
+  color: var(--dark);
+  font-size: 14px;
+}
+
+/* ---- the name form ---- */
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+
+input:focus {
+  border-color: var(--primary);
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+.field-error {
+  color: var(--error);
+  font-size: 13px;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---- student numbers ---- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.stats div {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 4px;
+  padding: 16px 8px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  text-align: center;
+}
+
+.stats dd {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.stats dt {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* ---- security ---- */
+
+.security {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ---- tablets and phones: one column, summary card above the others ---- */
+@media (max-width: 899px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* In a portal the sidebar takes 245px, so the summary card goes above the others earlier */
+@media (max-width: 1199px) {
+  :host(.in-portal) .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 599px) {
+  :host {
+    padding-top: 24px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats dd {
+    font-size: 24px;
+  }
+
+  /* Edit and Save buttons share the width, the logout button fills it */
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button,
+  .logout {
+    width: 100%;
+  }
+
+  .security {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

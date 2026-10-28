@@ -1,3 +1,88 @@
-<section class="content">
-  <h1>Listing detail</h1>
-</section>
+<div class="content">
+  <!-- A normal link to /listings. The click handler uses "browser back" instead when that keeps the filters -->
+  <a class="back" href="/listings" (click)="backToHomes($event)">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M15 5l-7 7 7 7" />
+    </svg>
+    Back to homes
+  </a>
+
+  @if (notFound()) {
+    <app-empty-state
+      icon="search"
+      heading="We could not find this home"
+      text="It may have been removed by the landlord, or the link is wrong."
+      buttonLabel="Browse homes"
+      buttonLink="/listings"
+    />
+  } @else if (errorText()) {
+    <app-error-message [message]="errorText()" (retry)="load()" />
+  } @else if (listing(); as home) {
+    <app-listing-gallery [listing]="home" />
+
+    <div class="layout">
+      <!-- On phones the booking panel comes first, on computers it is the sticky right column (see the CSS) -->
+      <aside class="side">
+        <app-booking-panel [listing]="home" />
+      </aside>
+
+      <article class="details">
+        <div class="meta">
+          <app-status-badge [status]="home.status" />
+          @if (listedText()) {
+            <span class="muted">{{ listedText() }}</span>
+          }
+        </div>
+
+        <h1>{{ home.title }}</h1>
+
+        @if (averageRating() !== null && reviewCount() > 0) {
+          <app-star-rating class="rating" [rating]="averageRating()!" [count]="reviewCount()" />
+        }
+
+        <p class="location">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z" />
+            <circle cx="12" cy="9.5" r="2.5" />
+          </svg>
+          {{ home.location }}
+          <span class="pill">{{ roomTypeLabel() }}</span>
+        </p>
+
+        <section class="block">
+          <h2>About this home</h2>
+          <!-- pre-line keeps the line breaks the landlord typed -->
+          <p class="description">{{ home.description }}</p>
+        </section>
+
+        <section class="block host">
+          <span class="avatar" aria-hidden="true">{{ (home.landlordFirstName || 'L').charAt(0) }}</span>
+          <div>
+            <p class="host-name">Hosted by {{ home.landlordFirstName || 'the landlord' }}</p>
+            <p class="muted">The landlord's contact details are sent to your email once your booking is confirmed.</p>
+          </div>
+        </section>
+
+        <section class="block">
+          <app-listing-reviews
+            [listingId]="home.id"
+            [averageRating]="averageRating()"
+            [reviewCount]="reviewCount()"
+            (ratingsChanged)="refreshRatings()"
+          />
+        </section>
+      </article>
+    </div>
+  } @else {
+    <!-- First load: grey shapes in the shape of the page -->
+    <span class="visually-hidden">Loading home...</span>
+    <div class="layout">
+      <aside class="side"><app-skeleton kind="card" /></aside>
+      <div class="details">
+        <app-skeleton kind="card" />
+        <app-skeleton kind="row" [columns]="1" />
+        <app-skeleton kind="row" [columns]="1" />
+      </div>
+    </div>
+  }
+</div>

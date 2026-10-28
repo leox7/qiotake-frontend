@@ -1,0 +1,286 @@
+@if (notAllowed()) {
+  <app-empty-state
+    icon="search"
+    heading="You can't edit this listing"
+    text="It belongs to another landlord, or it no longer exists. You can only change your own listings."
+    buttonLabel="Back to my listings"
+    buttonLink="/landlord/listings"
+  />
+} @else if (loadError()) {
+  <app-error-message [message]="loadError()" (retry)="loadListing()" />
+} @else if (loading()) {
+  <span class="visually-hidden">Loading your listing...</span>
+  <div class="card">
+    <app-skeleton kind="row" [columns]="2" />
+    <app-skeleton kind="row" [columns]="2" />
+    <app-skeleton kind="row" [columns]="2" />
+  </div>
+} @else {
+  @if (activated()) {
+    <p class="notice success" role="status">
+      <span><strong>Your landlord account is now active.</strong> Your first listing is live.</span>
+    </p>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <!-- ---------- The details ---------- -->
+    <section class="card" aria-labelledby="details-title">
+      <h2 id="details-title">Listing details</h2>
+
+      <div class="field wide">
+        <label for="title">Title</label>
+        <input
+          id="title"
+          type="text"
+          formControlName="title"
+          [maxLength]="maxTextLength"
+          placeholder="For example: Bright bedsitter near KCA gate"
+          [attr.aria-invalid]="errorText('title') ? 'true' : null"
+          [attr.aria-describedby]="errorText('title') ? 'title-error' : null"
+        />
+        @if (errorText('title'); as text) {
+          <p class="error" id="title-error">{{ text }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="roomType">Room type</label>
+        <select
+          id="roomType"
+          formControlName="roomType"
+          [attr.aria-invalid]="errorText('roomType') ? 'true' : null"
+          [attr.aria-describedby]="errorText('roomType') ? 'roomType-error' : null"
+        >
+          <option value="" disabled>Choose a room type</option>
+          @for (option of roomTypes; track option.value) {
+            <option [value]="option.value">{{ option.label }}</option>
+          }
+        </select>
+        @if (errorText('roomType'); as text) {
+          <p class="error" id="roomType-error">{{ text }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="price">Monthly rent (KES)</label>
+        <input
+          id="price"
+          type="number"
+          inputmode="decimal"
+          min="1"
+          formControlName="price"
+          placeholder="For example: 9500"
+          [attr.aria-invalid]="errorText('price') ? 'true' : null"
+          [attr.aria-describedby]="errorText('price') ? 'price-error' : null"
+        />
+        @if (errorText('price'); as text) {
+          <p class="error" id="price-error">{{ text }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="location">Location</label>
+        <input
+          id="location"
+          type="text"
+          formControlName="location"
+          [maxLength]="maxTextLength"
+          placeholder="For example: Ruaraka, near KCA University"
+          [attr.aria-invalid]="errorText('location') ? 'true' : null"
+          [attr.aria-describedby]="errorText('location') ? 'location-error' : null"
+        />
+        @if (errorText('location'); as text) {
+          <p class="error" id="location-error">{{ text }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="contactInfo">Contact info</label>
+        <input
+          id="contactInfo"
+          type="text"
+          formControlName="contactInfo"
+          [maxLength]="maxTextLength"
+          placeholder="How students can reach you"
+          [attr.aria-invalid]="errorText('contactInfo') ? 'true' : null"
+          [attr.aria-describedby]="errorText('contactInfo') ? 'contactInfo-error' : null"
+        />
+        @if (errorText('contactInfo'); as text) {
+          <p class="error" id="contactInfo-error">{{ text }}</p>
+        }
+      </div>
+
+      <div class="field wide">
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          rows="5"
+          formControlName="description"
+          [maxLength]="maxTextLength"
+          placeholder="Tell students what the home is like: water, security, distance to campus..."
+          [attr.aria-invalid]="errorText('description') ? 'true' : null"
+          [attr.aria-describedby]="errorText('description') ? 'description-error' : null"
+        ></textarea>
+        <p class="hint">{{ form.controls.description.value.length }} / {{ maxTextLength }} characters</p>
+        @if (errorText('description'); as text) {
+          <p class="error" id="description-error">{{ text }}</p>
+        }
+      </div>
+    </section>
+
+    <!-- ---------- The photos ---------- -->
+    <section class="card" aria-labelledby="photos-title">
+      <h2 id="photos-title">Photos</h2>
+      <p class="hint">
+        JPG or PNG, up to 2 MB each. A listing has one main photo and up to {{ imageRules.maxSecondary }} more.
+      </p>
+
+      @if (existingPhotos().length > 0) {
+        <div class="existing">
+          <h3>Photos on this listing</h3>
+          <ul class="photo-grid">
+            @for (photo of existingPhotos(); track photo.url) {
+              <li class="photo">
+                <img [src]="existingSrc(photo.url)" alt="" loading="lazy" />
+                @if (photo.primary) {
+                  <span class="tag">Primary</span>
+                }
+              </li>
+            }
+          </ul>
+          <p class="hint">Removing a photo or changing the main photo is not available yet.</p>
+        </div>
+      }
+
+      @if (rejected().length > 0) {
+        <div class="notice error" role="alert">
+          <ul class="rejected">
+            @for (message of rejected(); track message) {
+              <li>{{ message }}</li>
+            }
+          </ul>
+          <button class="text-button" type="button" (click)="dismissRejected()">Dismiss</button>
+        </div>
+      }
+
+      @if (freeSlots() > 0 || images().length > 0) {
+        @if (images().length < freeSlots()) {
+          <div
+            class="dropzone"
+            [class.dragging]="dragging()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave()"
+            (drop)="onDrop($event)"
+          >
+            <p>Drag photos here</p>
+            <p class="hint">or</p>
+            <button class="secondary" type="button" (click)="fileInput.click()">Choose photos</button>
+            <p class="hint">You can add {{ freeSlots() - images().length }} more.</p>
+            <input
+              #fileInput
+              class="file-input"
+              type="file"
+              multiple
+              [accept]="acceptTypes"
+              (change)="onFilesChosen($event)"
+              tabindex="-1"
+              aria-hidden="true"
+            />
+          </div>
+        }
+
+        @if (images().length > 0) {
+          <h3>New photos</h3>
+          <ul class="photo-grid">
+            @for (image of images(); track image.key) {
+              <li class="photo" [class.is-primary]="image.isPrimary">
+                <img [src]="image.previewUrl" [alt]="'Preview of ' + image.file.name" />
+
+                <div class="photo-info">
+                  <p class="file-name">{{ image.file.name }}</p>
+                  <p class="hint">{{ formatSize(image.file.size) }}</p>
+
+                  @if (image.state === 'uploading') {
+                    <div
+                      class="progress"
+                      role="progressbar"
+                      [attr.aria-valuenow]="image.progress"
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      [attr.aria-label]="'Uploading ' + image.file.name"
+                    >
+                      <span [style.width.%]="image.progress"></span>
+                    </div>
+                  } @else if (image.state === 'done') {
+                    <p class="done">Uploaded</p>
+                  } @else if (image.state === 'error') {
+                    <p class="error" role="alert">{{ image.error }}</p>
+                  }
+                </div>
+
+                @if (image.isPrimary) {
+                  <span class="tag">Primary</span>
+                }
+
+                <div class="photo-actions">
+                  @if (canChoosePrimary() && !image.isPrimary && image.state !== 'uploading') {
+                    <button class="text-button" type="button" (click)="makePrimary(image)">
+                      Make primary<span class="visually-hidden">: {{ image.file.name }}</span>
+                    </button>
+                  }
+                  @if (image.state !== 'done' && image.state !== 'uploading') {
+                    <button class="text-button danger" type="button" (click)="removeImage(image)">
+                      Remove<span class="visually-hidden"> {{ image.file.name }}</span>
+                    </button>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        }
+
+        <!-- The listing is saved but some photos did not go up: keep the work, offer to try again -->
+        @if (savedId() !== null && failedImages().length > 0 && !saving()) {
+          <div class="notice error" role="alert">
+            <span>
+              <strong>Your listing is saved</strong>, but {{ failedImages().length }}
+              {{ failedImages().length === 1 ? 'photo' : 'photos' }} did not upload.
+            </span>
+            <span class="row-actions">
+              <button class="primary" type="button" (click)="retryUpload()">Retry upload</button>
+              <button class="secondary" type="button" (click)="skipPhotos()">Skip the photos</button>
+            </span>
+          </div>
+        }
+      } @else {
+        <p class="hint">This listing already has the most photos it can have.</p>
+      }
+    </section>
+
+    @if (formError()) {
+      <p class="notice error" role="alert">{{ formError() }}</p>
+    }
+
+    <div class="buttons">
+      <a class="secondary" routerLink="/landlord/listings">Cancel</a>
+      <button class="primary" type="submit" [disabled]="saving() || uploading()">
+        @if (saving()) {
+          {{ uploading() ? 'Uploading photos...' : 'Saving...' }}
+        } @else {
+          {{ savedId() === null ? 'Create listing' : 'Save changes' }}
+        }
+      </button>
+    </div>
+  </form>
+}
+
+@if (leaveDialogOpen()) {
+  <app-confirm-dialog
+    heading="Leave without saving?"
+    message="You have changes that are not saved. If you leave now, they will be lost."
+    confirmLabel="Leave page"
+    cancelLabel="Stay and keep editing"
+    (confirmed)="answerLeave(true)"
+    (dismissed)="answerLeave(false)"
+  />
+}

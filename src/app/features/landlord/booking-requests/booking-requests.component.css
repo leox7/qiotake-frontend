@@ -1,0 +1,176 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---- tabs ---- */
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--dark);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tab:hover {
+  border-color: var(--primary);
+}
+
+.tab.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+.count {
+  min-width: 24px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 12%, var(--surface));
+  color: var(--primary);
+  font-size: 13px;
+  text-align: center;
+}
+
+.tab.active .count {
+  background: color-mix(in srgb, #ffffff 25%, transparent);
+  color: #ffffff;
+}
+
+/* the number of pending requests is highlighted so it is not missed */
+.count.attention {
+  background: var(--warning);
+  color: #ffffff;
+}
+
+/* ---- table ---- */
+
+.portal-table {
+  min-width: 860px;
+}
+
+.strong {
+  color: var(--dark);
+  font-weight: 700;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+/* A pending request gets a thin coloured edge so it stands out */
+tr.needs-answer td:first-child {
+  box-shadow: inset 4px 0 0 var(--warning);
+}
+
+.primary.small {
+  min-height: 36px;
+  padding: 0 14px;
+}
+
+.primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 799px) {
+  .portal-table {
+    min-width: 0;
+  }
+
+  tr.needs-answer {
+    border-left: 4px solid var(--warning);
+  }
+
+  tr.needs-answer td:first-child {
+    box-shadow: none;
+  }
+
+  .row-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* ---- side panel ---- */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: color-mix(in srgb, var(--dark) 55%, transparent);
+}
+
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 111;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: min(420px, 100vw);
+  padding: 24px;
+  overflow-y: auto;
+  background: var(--surface);
+  box-shadow: -16px 0 48px color-mix(in srgb, var(--dark) 25%, transparent);
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.panel-head h2 {
+  color: var(--dark);
+  font-size: 20px;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.details > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.details dt {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.details dd {
+  margin: 0;
+  color: var(--dark);
+  text-align: right;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 14px;
+}

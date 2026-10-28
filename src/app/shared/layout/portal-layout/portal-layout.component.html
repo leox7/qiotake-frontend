@@ -1,0 +1,113 @@
+<div class="portal" [class.dark]="theme() === 'dark'">
+  <!-- Top bar: only shown under 1024px, where the sidebar is hidden in a drawer -->
+  <header class="topbar">
+    <button
+      #hamburgerButton
+      class="hamburger"
+      type="button"
+      aria-controls="portal-sidebar"
+      [attr.aria-expanded]="drawerOpen()"
+      (click)="toggleDrawer()"
+    >
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <span class="visually-hidden">Open the menu</span>
+    </button>
+    <app-logo />
+  </header>
+
+  <!-- The dark area behind the open drawer. Clicking it closes the drawer. -->
+  <div class="backdrop" [class.show]="drawerOpen()" (click)="closeDrawer()" aria-hidden="true"></div>
+
+  <aside id="portal-sidebar" class="sidebar" [class.open]="drawerOpen()">
+    <div class="sidebar-logo">
+      <app-logo [light]="theme() === 'dark'" />
+    </div>
+
+    <nav aria-label="Portal menu">
+      <ul class="menu">
+        @for (item of menuItems(); track item.route) {
+          <li>
+            <!-- routerLinkActive adds the class "active" to the link of the page that is open -->
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="active"
+              ariaCurrentWhenActive="page"
+              [routerLinkActiveOptions]="{ exact: item.exact ?? false }"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                @switch (item.icon) {
+                  @case ('dashboard') {
+                    <rect x="3" y="3" width="7" height="9" rx="1" />
+                    <rect x="14" y="3" width="7" height="5" rx="1" />
+                    <rect x="14" y="12" width="7" height="9" rx="1" />
+                    <rect x="3" y="16" width="7" height="5" rx="1" />
+                  }
+                  @case ('listings') {
+                    <path d="M3 11l9-8 9 8" />
+                    <path d="M5 10v10h14V10" />
+                    <path d="M10 20v-6h4v6" />
+                  }
+                  @case ('bookings') {
+                    <rect x="3" y="5" width="18" height="16" rx="2" />
+                    <path d="M3 10h18M8 3v4M16 3v4" />
+                  }
+                  @case ('payments') {
+                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                    <path d="M2 10h20M6 15h4" />
+                  }
+                  @case ('notifications') {
+                    <path d="M6 9a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8" />
+                    <path d="M10 21h4" />
+                  }
+                  @case ('reports') {
+                    <path d="M4 20V10M10 20V4M16 20v-8M22 20H2" />
+                  }
+                  @case ('profile') {
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 21a8 8 0 0 1 16 0" />
+                  }
+                }
+              </svg>
+              {{ item.label }}
+              @if (item.badge) {
+                <span class="badge" aria-hidden="true">{{ item.badge > 99 ? '99+' : item.badge }}</span>
+                <span class="visually-hidden">, {{ item.badge }} waiting</span>
+              }
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <!-- Who is logged in, at the bottom of the sidebar -->
+    <div class="profile">
+      <span class="avatar" aria-hidden="true">{{ initials() }}</span>
+      <div class="who">
+        <p class="name">{{ fullName() }}</p>
+        <p class="role">{{ roleLabel() }}</p>
+      </div>
+      <button class="logout" type="button" (click)="logOut()">Log out</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    @if (header(); as h) {
+      <header class="page-header">
+        <div class="titles">
+          <p class="eyebrow">{{ h.eyebrow }}</p>
+          <h1>{{ h.heading }}</h1>
+        </div>
+        @if (h.actionLabel && h.actionLink) {
+          <a class="primary" [routerLink]="h.actionLink">{{ h.actionLabel }}</a>
+        }
+      </header>
+    }
+
+    <!-- Not a <main>: app.component.html already wraps everything in one -->
+    <div class="page">
+      <router-outlet />
+    </div>
+  </div>
+</div>

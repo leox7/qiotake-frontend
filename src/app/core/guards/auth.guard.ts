@@ -5,6 +5,7 @@ import { TokenStorageService } from '../services/token-storage.service';
 /**
  * A guard decides whether a route may open. Returning `true` lets the user in;
  * returning a URL tree redirects them. Here: not logged in -> go to /login.
+ * It reads the browser storage (not a value in memory), so it still works after a page refresh.
  */
 export const authGuard: CanActivateFn = (_route, state) => {
   const router = inject(Router);

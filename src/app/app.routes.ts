@@ -9,7 +9,7 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    title: 'Home',
+    title: 'QiotaKE | Student homes near KCA',
     loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
   },
 
@@ -22,10 +22,11 @@ export const routes: Routes = [
     loadChildren: () => import('./features/listings/listing.routes').then((m) => m.LISTING_ROUTES),
   },
 
-  // Student pages: must be logged in.
+  // Bookings are for students only: logged out goes to /login, landlord or admin goes to /forbidden.
   {
     path: 'bookings',
-    canActivate: [authGuard],
+    canActivate: [roleGuard],
+    data: { role: 'STUDENT' },
     children: [
       {
         path: '',
@@ -52,15 +53,29 @@ export const routes: Routes = [
   },
 
   // Role-protected portals. The required role is read from `data` by roleGuard.
+  // The landlord portal: the shell draws the sidebar layout, every child page appears inside it.
   {
     path: 'landlord',
     canActivate: [roleGuard],
     data: { role: 'LANDLORD' },
-    title: 'Landlord dashboard',
     loadComponent: () =>
-      import('./features/landlord/landlord-dashboard/landlord-dashboard.component').then(
-        (m) => m.LandlordDashboardComponent,
-      ),
+      import('./features/landlord/landlord-shell/landlord-shell.component').then((m) => m.LandlordShellComponent),
+    children: [
+      // The profile page lives in features/profile. A feature may not import another feature,
+      // so it is attached here in app.routes.ts, which is allowed to know every feature.
+      {
+        path: 'profile',
+        title: 'My profile',
+        data: { header: { eyebrow: 'Account settings', heading: 'My profile' } },
+        loadComponent: () =>
+          import('./features/profile/profile.component').then((m) => m.ProfileComponent),
+      },
+      // /landlord (dashboard), /landlord/listings, /bookings, /payments, /notifications, /reports
+      {
+        path: '',
+        loadChildren: () => import('./features/landlord/landlord.routes').then((m) => m.LANDLORD_ROUTES),
+      },
+    ],
   },
   {
     path: 'admin',
@@ -76,6 +91,7 @@ export const routes: Routes = [
   // /faq, /contact, /terms, /privacy
   { path: '', loadChildren: () => import('./features/info/info.routes').then((m) => m.INFO_ROUTES) },
 
-  // Anything unknown goes back to the home page. Must stay LAST.
-  { path: '**', redirectTo: '' },
+  // /forbidden and the "page not found" page (the "**" inside). Must stay LAST,
+  // because "**" matches every address that the routes above did not.
+  { path: '', loadChildren: () => import('./features/errors/errors.routes').then((m) => m.ERROR_ROUTES) },
 ];

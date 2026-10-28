@@ -83,6 +83,10 @@
   font-size: 14px;
 }
 
+.rating {
+  font-size: 15px;
+}
+
 .meta {
   display: flex;
   flex-wrap: wrap;

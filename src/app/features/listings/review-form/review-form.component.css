@@ -1,0 +1,160 @@
+:host {
+  display: block;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+h3 {
+  font-size: 18px;
+  color: var(--dark);
+}
+
+/* ---- the star picker ---- */
+
+.rating {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+legend {
+  margin-bottom: 4px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.picker {
+  display: flex;
+}
+
+/* Each star is a label with a 44px touch area */
+.picker label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--border);
+  cursor: pointer;
+}
+
+.picker label.on {
+  color: var(--warning);
+}
+
+.picker label:hover {
+  color: var(--warning);
+}
+
+/* The real radio button is hidden, so the ring is drawn on its star */
+.picker input:focus-visible + label {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---- comment ---- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark);
+}
+
+.optional {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  resize: vertical;
+}
+
+textarea:focus {
+  border-color: var(--primary);
+}
+
+textarea[aria-invalid='true'] {
+  border-color: var(--error);
+}
+
+.count {
+  align-self: flex-end;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.count.too-long {
+  color: var(--error);
+  font-weight: 700;
+}
+
+/* ---- messages ---- */
+
+.field-error {
+  color: var(--error);
+  font-size: 13px;
+}
+
+.field-error:empty {
+  display: none;
+}
+
+.form-error {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--error) 10%, var(--surface));
+  color: color-mix(in srgb, var(--error) 85%, var(--text));
+  font-size: 14px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 599px) {
+  .box {
+    padding: 16px;
+  }
+
+  /* Save on top, Cancel under it, both full width */
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}

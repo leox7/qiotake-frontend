@@ -1,0 +1,32 @@
+<section class="hero">
+  <div class="content grid">
+    <div class="text">
+      <p class="eyebrow">Student homes, made simple</p>
+      <h1>Find a place to stay <span class="accent-word">near KCA.</span></h1>
+      <p class="lead">Verified homes, clear prices, and a booking process designed for students.</p>
+
+      <app-search-bar (searched)="onSearch($event)" />
+
+      <ul class="trust">
+        @for (point of trustPoints; track point) {
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12.5l4.5 4.5L19 7.5" />
+            </svg>
+            {{ point }}
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- The picture is only decoration. It is hidden on phones (see the CSS), so phones never download it. -->
+    <div class="visual" aria-hidden="true">
+      @if (totalAvailable() !== null && totalAvailable()! > 0) {
+        <div class="float-card">
+          <span class="number">{{ totalAvailable() | number }}</span>
+          <span>{{ totalAvailable() === 1 ? 'home' : 'homes' }} available</span>
+        </div>
+      }
+    </div>
+  </div>
+</section>

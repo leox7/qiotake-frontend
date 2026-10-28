@@ -1,0 +1,13 @@
+<section class="cta" aria-labelledby="cta-title">
+  <!-- .content keeps the side spacing of the page, .box is the coloured panel inside it -->
+  <div class="content">
+    <div class="box">
+      <h2 id="cta-title">Have a place students will love?</h2>
+      <p>List with QiotaKE and fill your rooms with ease.</p>
+
+      @if (destination(); as link) {
+        <a class="primary" [routerLink]="link" [queryParams]="queryParams()">List your property</a>
+      }
+    </div>
+  </div>
+</section>

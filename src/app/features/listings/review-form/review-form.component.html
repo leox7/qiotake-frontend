@@ -1,0 +1,62 @@
+<form class="box" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+  <h3>{{ review() ? 'Edit your review' : 'Rate your stay' }}</h3>
+
+  <!-- Five radio buttons, drawn as stars. Radios give us the arrow keys and screen reader support for free. -->
+  <fieldset class="rating">
+    <legend>Your rating</legend>
+    <div class="picker">
+      @for (number of stars; track number) {
+        <input
+          class="visually-hidden"
+          type="radio"
+          name="rating"
+          [id]="'review-star-' + number"
+          [value]="number"
+          formControlName="rating"
+        />
+        <label [for]="'review-star-' + number" [class.on]="number <= (form.controls.rating.value ?? 0)">
+          <span class="visually-hidden">{{ starLabel(number) }}</span>
+          <span aria-hidden="true">★</span>
+        </label>
+      }
+    </div>
+    <p class="field-error" role="alert">
+      @if (form.controls.rating.touched && form.controls.rating.hasError('required')) {
+        Choose a rating from 1 to 5 stars.
+      }
+    </p>
+  </fieldset>
+
+  <div class="field">
+    <label for="review-comment">Comment <span class="optional">(optional)</span></label>
+    <textarea
+      id="review-comment"
+      rows="4"
+      formControlName="comment"
+      placeholder="What was it like to live here?"
+      [attr.aria-invalid]="form.controls.comment.invalid"
+      aria-describedby="review-comment-count"
+    ></textarea>
+    <p id="review-comment-count" class="count" [class.too-long]="form.controls.comment.invalid">
+      {{ form.controls.comment.value.length }} / {{ maxComment }}
+    </p>
+  </div>
+
+  @if (formError()) {
+    <p class="form-error" role="alert">{{ formError() }}</p>
+  }
+
+  <div class="actions">
+    @if (review()) {
+      <button class="secondary" type="button" [disabled]="sending()" (click)="cancelled.emit()">Cancel</button>
+    }
+    <!-- Disabled from the first click until the answer arrives, so one click cannot send two requests -->
+    <button class="primary" type="submit" [disabled]="sending()">
+      @if (sending()) {
+        Saving...
+      } @else {
+        {{ review() ? 'Save changes' : 'Post review' }}
+      }
+    </button>
+  </div>
+</form>

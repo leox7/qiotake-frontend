@@ -1,0 +1,49 @@
+@if (photos().length === 0) {
+  <!-- No photos yet: a calm placeholder in the same size as the big photo -->
+  <div class="placeholder">
+    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 11l9-8 9 8" />
+      <path d="M5 10v10h14V10" />
+      <path d="M10 20v-6h4v6" />
+    </svg>
+    <p>No photos yet</p>
+  </div>
+} @else {
+  <div class="gallery">
+    <!-- The class says how many photos there are, so the CSS can pick the right layout -->
+    <ul class="photos" [class.one]="photos().length === 1" [class.two]="photos().length === 2">
+      @for (url of photos(); track url; let i = $index) {
+        <!-- "extra" photos (4th and later) are hidden on computers but can be swiped on phones -->
+        <li [class.extra]="i >= 3">
+          <button type="button" class="photo-button" (click)="open(i, $event)">
+            <span class="visually-hidden">Open photo {{ i + 1 }} of {{ photos().length }}</span>
+            <img [src]="url" alt="" [attr.loading]="i === 0 ? null : 'lazy'" (error)="onPhotoError(url)" />
+          </button>
+        </li>
+      }
+    </ul>
+
+    <button type="button" class="secondary view-all" (click)="open(0, $event)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </svg>
+      @if (photos().length === 1) {
+        View photo
+      } @else {
+        View all {{ photos().length }} photos
+      }
+    </button>
+  </div>
+}
+
+@if (openAt() !== null) {
+  <app-photo-lightbox
+    [photos]="photos()"
+    [startIndex]="openAt() ?? 0"
+    [title]="listing().title"
+    (closed)="close()"
+  />
+}

@@ -1,0 +1,77 @@
+@if (error()) {
+  <app-error-message [message]="error()" (retry)="load()" />
+} @else if (loading()) {
+  <span class="visually-hidden">Loading your payments...</span>
+  <div class="stats">
+    <app-skeleton kind="stat" />
+    <app-skeleton kind="stat" />
+  </div>
+  <div class="table-card">
+    @for (row of skeletonRows; track row) {
+      <app-skeleton kind="row" [columns]="6" />
+    }
+  </div>
+} @else if (payments().length === 0) {
+  <app-empty-state
+    icon="card"
+    heading="No payments yet"
+    text="When a student pays a deposit or rent for one of your homes, the payment shows here."
+  />
+} @else {
+  <!-- ---------- Summary ---------- -->
+  <div class="stats">
+    <section class="stat">
+      <h2>Received this month</h2>
+      <p class="value">KES {{ receivedThisMonth() | number: '1.0-0' }}</p>
+    </section>
+    <section class="stat">
+      <h2>Successful payments this month</h2>
+      <p class="value">{{ successfulThisMonth() }}</p>
+    </section>
+  </div>
+
+  <!-- ---------- Filter ---------- -->
+  <div class="filter">
+    <label for="status-filter">Status</label>
+    <select id="status-filter" [value]="statusFilter()" (change)="onStatusChange($event)">
+      @for (option of statusOptions; track option.value) {
+        <option [value]="option.value" [selected]="option.value === statusFilter()">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+  @if (rows().length === 0) {
+    <app-empty-state icon="search" heading="No payments with this status" text="Try another status." />
+  } @else {
+    <div class="table-card">
+      <table class="portal-table">
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Student</th>
+            <th scope="col">Listing</th>
+            <th scope="col">Type</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Status</th>
+            <th scope="col">Receipt</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (payment of rows(); track payment.id) {
+            <tr>
+              <td data-label="Date" class="nowrap">{{ dateText(payment) }}</td>
+              <td data-label="Student" class="strong">{{ payment.studentFirstName }}</td>
+              <td data-label="Listing">{{ payment.listingTitle }}</td>
+              <td data-label="Type">{{ typeLabel(payment) }}</td>
+              <td data-label="Amount" class="nowrap">KES {{ payment.amount | number: '1.0-0' }}</td>
+              <td data-label="Status"><app-status-badge [status]="payment.status" /></td>
+              <td data-label="Receipt">{{ payment.mpesaReceiptNumber ?? '-' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [page]="page()" [totalPages]="totalPages()" (pageChange)="page.set($event)" />
+  }
+}

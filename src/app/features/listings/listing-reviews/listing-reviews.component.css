@@ -1,0 +1,155 @@
+:host {
+  display: block;
+}
+
+.reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+h2 {
+  font-size: 20px;
+  color: var(--dark);
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.hint {
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+  color: var(--dark);
+  font-size: 14px;
+}
+
+/* ---- the average ---- */
+
+.summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.big {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--dark);
+}
+
+.summary app-star-rating {
+  font-size: 22px;
+}
+
+/* ---- the student's own review ---- */
+
+.mine {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 20px;
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-lg);
+}
+
+.mine app-star-rating {
+  font-size: 20px;
+}
+
+.mine-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.danger {
+  color: var(--error);
+  border-color: var(--error);
+}
+
+/* ---- the list ---- */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review {
+  display: flex;
+  gap: 14px;
+  padding: 16px 0;
+  border-top: 1px solid var(--border);
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--surface);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.review app-star-rating {
+  font-size: 16px;
+}
+
+/* pre-line keeps the line breaks the student typed. Long words wrap instead of widening the page. */
+.comment {
+  margin-top: 4px;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.more {
+  align-self: flex-start;
+}
+
+.more:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 599px) {
+  .more {
+    align-self: stretch;
+  }
+
+  .mine {
+    align-items: stretch;
+    padding: 16px;
+  }
+
+  .mine-actions button {
+    flex: 1;
+  }
+}

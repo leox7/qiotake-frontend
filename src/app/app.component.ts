@@ -6,7 +6,7 @@ import { FooterComponent } from './shared/components/footer/footer.component';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
 
-// The landlord and admin areas get their own layout later, so they must not show the public navbar and footer.
+// The landlord and admin areas have their own layout (shared/layout/portal-layout), so they must not show the public navbar and footer.
 const OWN_LAYOUT_AREAS = ['landlord', 'admin'];
 
 // Pages that keep the navbar but have no footer: the sign in pages (a short focused card) and the listings search page.

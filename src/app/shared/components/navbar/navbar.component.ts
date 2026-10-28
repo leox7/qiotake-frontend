@@ -1,6 +1,7 @@
 import { Component, ElementRef, HostListener, computed, inject, signal, viewChild } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthStateService } from '../../../core/services/auth-state.service';
+import { SessionService } from '../../../core/services/session.service';
 import { LogoComponent } from '../logo/logo.component';
 
 /**
@@ -16,7 +17,7 @@ import { LogoComponent } from '../logo/logo.component';
 })
 export class NavbarComponent {
   private readonly auth = inject(AuthStateService);
-  private readonly router = inject(Router);
+  private readonly session = inject(SessionService);
   // The <app-navbar> element itself. We need it to tell whether a click happened inside or outside.
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
 
@@ -59,9 +60,9 @@ export class NavbarComponent {
   }
 
   logOut(): void {
-    this.auth.signOut();
     this.closeMenus();
-    this.router.navigateByUrl('/');
+    // Tells the backend, clears this device, goes to the home page and shows the toast.
+    this.session.logout();
   }
 
   // A click anywhere on the page: close the menus unless the click was inside the navbar.

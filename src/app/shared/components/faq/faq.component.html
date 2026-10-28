@@ -1,0 +1,33 @@
+<div class="faq">
+  @for (item of items; track item.question; let i = $index) {
+    <div class="item" [class.open]="openIndex() === i">
+      <!-- A real button, so Tab, Enter and Space work without extra code -->
+      <h3>
+        <button
+          type="button"
+          class="question"
+          [id]="'faq-question-' + i"
+          [attr.aria-expanded]="openIndex() === i"
+          [attr.aria-controls]="'faq-answer-' + i"
+          (click)="toggle(i)"
+        >
+          <span>{{ item.question }}</span>
+          <svg class="chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+      </h3>
+
+      <!-- "hidden" hides it from the eye and from screen readers -->
+      <div
+        class="answer"
+        role="region"
+        [id]="'faq-answer-' + i"
+        [attr.aria-labelledby]="'faq-question-' + i"
+        [hidden]="openIndex() !== i"
+      >
+        <p>{{ item.answer }}</p>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,72 @@
+<div class="filters">
+  <div class="head">
+    <h2>Filters</h2>
+    <button class="clear" type="button" (click)="clearAll()">Clear all</button>
+  </div>
+
+  <div class="group">
+    <label class="label" [for]="idPrefix() + '-location'">Location</label>
+    <input
+      [id]="idPrefix() + '-location'"
+      type="text"
+      [formControl]="locationControl"
+      (blur)="sendLocation(locationControl.value)"
+      placeholder="e.g. Ruaraka"
+      autocomplete="off"
+    />
+  </div>
+
+  <div class="group">
+    <div class="budget-head">
+      <label class="label" [for]="idPrefix() + '-budget'">Monthly budget</label>
+      <span class="budget-value">{{ budgetLabel() }}</span>
+    </div>
+    <!-- "input" fires while dragging (moves the label), "change" fires when the visitor lets go (asks the backend) -->
+    <input
+      [id]="idPrefix() + '-budget'"
+      type="range"
+      [min]="budgetMin"
+      [max]="budgetMax"
+      step="1000"
+      [value]="sliderValue()"
+      (input)="onSliderMove($event)"
+      (change)="onSliderRelease()"
+    />
+    <div class="scale" aria-hidden="true">
+      <span>KES 5,000</span>
+      <span>KES 35,000+</span>
+    </div>
+  </div>
+
+  <!-- Radio buttons, not checkboxes: the backend can only filter by ONE room type at a time -->
+  <fieldset class="group">
+    <legend class="label">Room type</legend>
+    <label class="option">
+      <input
+        type="radio"
+        [name]="idPrefix() + '-room-type'"
+        [checked]="filters().roomType === ''"
+        (change)="onRoomTypeChange('')"
+      />
+      Any
+    </label>
+    @for (type of roomTypes; track type.value) {
+      <label class="option">
+        <input
+          type="radio"
+          [name]="idPrefix() + '-room-type'"
+          [checked]="filters().roomType === type.value"
+          (change)="onRoomTypeChange(type.value)"
+        />
+        {{ type.label }}
+      </label>
+    }
+  </fieldset>
+
+  <div class="group">
+    <label class="option">
+      <input type="checkbox" [checked]="filters().availableOnly" (change)="onAvailableChange($event)" />
+      Available now
+    </label>
+  </div>
+</div>
