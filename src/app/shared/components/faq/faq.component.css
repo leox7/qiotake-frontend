@@ -19,8 +19,9 @@
   border-color: var(--primary);
 }
 
-h3 {
+.heading {
   font-size: inherit;
+  font-weight: 700; /* the same look the h3 had */
 }
 
 .question {

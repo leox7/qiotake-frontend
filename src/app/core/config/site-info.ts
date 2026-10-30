@@ -2,7 +2,7 @@
  * Contact details and facts about QiotaKE, shown in the footer (and later on the Contact page).
  * Change them HERE and every page updates.
  *
- * TODO: replace the phone number, address and opening hours with the real ones.
+ * BEFORE LAUNCH: the phone number, address and opening hours below are placeholders. Replace them with the real ones.
  */
 export const SITE_INFO = {
   name: 'QiotaKE',

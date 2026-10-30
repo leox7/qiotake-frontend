@@ -1,0 +1,98 @@
+<div class="table-toolbar">
+  <div class="field">
+    <label for="listing-status">Status</label>
+    <select id="listing-status" (change)="onStatusChange($event)">
+      @for (option of statusOptions; track option.value) {
+        <option [value]="option.value" [selected]="option.value === statusFilter()">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+</div>
+
+@if (actionError()) {
+  <p class="notice error" role="alert">{{ actionError() }}</p>
+}
+
+@if (error()) {
+  <app-error-message [message]="error()" (retry)="load()" />
+} @else if (loading() && !result()) {
+  <span class="visually-hidden">Loading the listings...</span>
+  <div class="table-card">
+    @for (row of skeletonRows; track row) {
+      <app-skeleton kind="row" [columns]="6" />
+    }
+  </div>
+} @else if (result(); as data) {
+  @if (data.totalElements === 0) {
+    @if (statusFilter() === '') {
+      <app-empty-state icon="home" heading="No listings yet" text="Listings show here after landlords post them." />
+    } @else {
+      <app-empty-state icon="search" heading="No listings with this status" text="Try another status." />
+    }
+  } @else {
+    <!-- While the next page loads, the old rows stay on screen, dimmed -->
+    <div class="table-card" [class.loading]="loading()" [attr.aria-busy]="loading()">
+      <table class="portal-table wide">
+        <thead>
+          <tr>
+            <th scope="col"><span class="visually-hidden">Photo</span></th>
+            <th scope="col">Title</th>
+            <th scope="col">Landlord</th>
+            <th scope="col">Price</th>
+            <th scope="col">Status</th>
+            <th scope="col">Created</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (listing of data.content; track listing.id) {
+            <tr>
+              <td class="photo-cell">
+                @if (photo(listing); as src) {
+                  <img class="thumb" [src]="src" alt="" loading="lazy" />
+                } @else {
+                  <span class="thumb none">No photo</span>
+                }
+              </td>
+              <td data-label="Title" class="cell-strong">{{ listing.title }}</td>
+              <td data-label="Landlord">{{ landlordName(listing) }}</td>
+              <td data-label="Price" class="nowrap">{{ listing.price | money }}/month</td>
+              <td data-label="Status"><app-status-badge [status]="listing.status" /></td>
+              <td data-label="Created" class="nowrap">{{ createdText(listing) }}</td>
+              <td class="actions-cell">
+                <div class="row-actions">
+                  <!-- The public listing page, in a new tab. noopener: the new page gets no control over this one. -->
+                  <a
+                    class="text-button"
+                    [href]="'/listings/' + listing.id"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    View<span class="visually-hidden"> {{ listing.title }} (opens in a new tab)</span>
+                  </a>
+                  <button class="text-button danger" type="button" [disabled]="busy()" (click)="openDeleteBox(listing, $event)">
+                    Delete<span class="visually-hidden"> {{ listing.title }}</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [page]="data.page" [totalPages]="data.totalPages" (pageChange)="goToPage($event)" />
+  }
+}
+
+@if (deleteTarget(); as listing) {
+  <app-confirm-dialog
+    heading="Delete this listing?"
+    [message]="'&quot;' + listing.title + '&quot; and its photos will be deleted. This cannot be undone.'"
+    confirmLabel="Yes, delete it"
+    cancelLabel="Keep it"
+    [busy]="busy()"
+    (confirmed)="deleteListing()"
+    (dismissed)="closeBox()"
+  />
+}

@@ -42,9 +42,15 @@
             <dt>Home</dt>
             <dd>{{ booking()?.listingTitle }}</dd>
           </div>
+          @if (paymentType() === 'RENT' && nextDueText()) {
+            <div>
+              <dt>Rent due</dt>
+              <dd>{{ nextDueText() }}</dd>
+            </div>
+          }
           <div class="total">
             <dt>Amount to pay</dt>
-            <dd>KES {{ price() | number: '1.0-2' }}</dd>
+            <dd>{{ amount() | money }}</dd>
           </div>
         </dl>
 
@@ -75,7 +81,7 @@
 
           <!-- Disabled from the first click until the answer arrives, so it cannot be paid twice -->
           <button class="primary pay" type="submit" [disabled]="sending()">
-            {{ sending() ? 'Sending...' : 'Pay KES ' + (price() | number: '1.0-2') + ' with M-Pesa' }}
+            {{ sending() ? 'Sending...' : 'Pay ' + (amount() | money) + ' with M-Pesa' }}
           </button>
         </form>
       }
@@ -103,12 +109,25 @@
           <dl class="summary left">
             <div>
               <dt>Amount paid</dt>
-              <dd>KES {{ payment()?.amount | number: '1.0-2' }}</dd>
+              <dd>{{ payment()?.amount | money }}</dd>
             </div>
+            @if (payment()?.paidAt) {
+              <div>
+                <dt>Paid on</dt>
+                <dd>{{ dateOf(payment()!) }}</dd>
+              </div>
+            }
             @if (payment()?.mpesaReceiptNumber) {
               <div>
                 <dt>M-Pesa receipt</dt>
                 <dd>{{ payment()?.mpesaReceiptNumber }}</dd>
+              </div>
+            }
+            <!-- Only when there is more to pay. The backend works the date out. -->
+            @if (booking()?.nextPaymentType === 'RENT' && nextDueText()) {
+              <div>
+                <dt>Next rent due</dt>
+                <dd>{{ nextDueText() }}</dd>
               </div>
             }
           </dl>
@@ -120,11 +139,17 @@
       @case ('failed') {
         <div class="center" role="alert">
           <h1>The payment did not go through</h1>
-          <!-- The backend does not tell us why, so we list the usual reasons -->
-          <p>
-            This can happen if the request was cancelled on your phone, the PIN was wrong, or there was not
-            enough money in M-Pesa. You can try again.
-          </p>
+          @if (payment()?.failureReason; as reason) {
+            <!-- The reason the backend gives, for example "The request was cancelled on your phone" -->
+            <p>{{ reason }}</p>
+            <p>You can try again.</p>
+          } @else {
+            <!-- No reason from the backend: the usual ones -->
+            <p>
+              This can happen if the request was cancelled on your phone, the PIN was wrong, or there was not
+              enough money in M-Pesa. You can try again.
+            </p>
+          }
           <button class="primary" type="button" (click)="tryAgain()">Try again</button>
           <a class="secondary" routerLink="/bookings">Back to my bookings</a>
         </div>
@@ -160,7 +185,7 @@
         @for (item of payments(); track item.id) {
           <li>
             <div>
-              <p class="history-main">{{ typeLabels[item.type] }} · KES {{ item.amount | number: '1.0-2' }}</p>
+              <p class="history-main">{{ typeLabels[item.type] }} · {{ item.amount | money }}</p>
               <p class="muted">
                 {{ dateOf(item) }}
                 @if (item.mpesaReceiptNumber) {

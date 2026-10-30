@@ -1,7 +1,9 @@
+<!-- First thing a keyboard user reaches with Tab: jumps over the navbar to the page. Only visible while focused. -->
+<a class="skip-link" href="#main-content" (click)="skipToContent($event)">Skip to main content</a>
 @if (showNavbarAndFooter()) {
   <app-navbar />
 }
-<main>
+<main id="main-content" tabindex="-1">
   <router-outlet />
 </main>
 @if (showFooter()) {

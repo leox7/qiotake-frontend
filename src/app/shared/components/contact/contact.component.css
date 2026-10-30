@@ -1,7 +1,7 @@
 :host {
   display: block;
   /* --muted is too pale for small text on white, so helper text uses a darker mix of it */
-  --text-soft: color-mix(in srgb, var(--muted) 60%, var(--dark));
+  --text-soft: var(--muted-strong);
 }
 
 .contact {
@@ -44,6 +44,12 @@ h2 {
   flex-direction: column;
   gap: 2px;
   color: var(--text);
+}
+
+.details a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 .label {

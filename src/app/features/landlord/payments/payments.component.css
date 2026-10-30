@@ -23,7 +23,7 @@
 }
 
 .stat h2 {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 14px;
   font-weight: 700;
 }

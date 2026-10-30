@@ -58,7 +58,12 @@
         <section class="block host">
           <span class="avatar" aria-hidden="true">{{ (home.landlordFirstName || 'L').charAt(0) }}</span>
           <div>
-            <p class="host-name">Hosted by {{ home.landlordFirstName || 'the landlord' }}</p>
+            <p class="host-name">
+              Hosted by {{ home.landlordFirstName || 'the landlord' }}
+              @if (home.landlordVerified) {
+                <span class="verified-badge">&#10003; Verified landlord</span>
+              }
+            </p>
             <p class="muted">The landlord's contact details are sent to your email once your booking is confirmed.</p>
           </div>
         </section>

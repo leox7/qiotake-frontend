@@ -4,11 +4,14 @@ import { ActivatedRoute } from '@angular/router';
 import { Profile } from '../../core/models/profile.model';
 import { AuthStateService } from '../../core/services/auth-state.service';
 import { SessionService } from '../../core/services/session.service';
+import { TokenStorageService } from '../../core/services/token-storage.service';
 import { ToastService } from '../../core/services/toast.service';
 import { getApiErrorMessage, shouldToastHere } from '../../core/utils/api-error';
+import { formatDate, formatMonthYear } from '../../core/utils/format-date';
 import { getRoleLabel } from '../../core/utils/role-label';
 import { ErrorMessageComponent } from '../../shared/components/error-message/error-message.component';
 import { SkeletonComponent } from '../../shared/components/skeleton/skeleton.component';
+import { StatusBadgeComponent } from '../../shared/components/status-badge/status-badge.component';
 import { ProfileService } from './profile.service';
 
 // Letters (also accented ones), spaces, hyphens and apostrophes, and at least one real character
@@ -25,7 +28,7 @@ const NAME_VALIDATORS = [Validators.required, Validators.maxLength(50), Validato
  */
 @Component({
   selector: 'app-profile',
-  imports: [ReactiveFormsModule, ErrorMessageComponent, SkeletonComponent],
+  imports: [ReactiveFormsModule, ErrorMessageComponent, SkeletonComponent, StatusBadgeComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.css',
   // Inside a portal the layout supplies the spacing, so the page drops its own (see the css)
@@ -35,6 +38,7 @@ export class ProfileComponent {
   private readonly profileService = inject(ProfileService);
   private readonly authState = inject(AuthStateService);
   private readonly sessionService = inject(SessionService);
+  private readonly tokenStorage = inject(TokenStorageService);
   private readonly toast = inject(ToastService);
   private readonly injector = inject(Injector);
 
@@ -65,6 +69,19 @@ export class ProfileComponent {
     return profile ? (profile.firstName.charAt(0) + profile.lastName.charAt(0)).toUpperCase() : '';
   });
 
+  /**
+   * "Your session ends on 7 November 2026." from the date the backend gave at login (kept by TokenStorageService).
+   * Empty when we do not have it (for example a login from before this was added): the page then shows its old text.
+   */
+  sessionEndText(): string {
+    const end = this.tokenStorage.getRefreshTokenExpiresAt();
+    const date = end ? new Date(end) : null;
+    if (!end || !date || isNaN(date.getTime())) {
+      return '';
+    }
+    return `Your session ends on ${formatDate(end.slice(0, 10))}.`;
+  }
+
   readonly roleLabel = computed(() => {
     const profile = this.profile();
     return profile ? getRoleLabel(profile.role) : '';
@@ -73,11 +90,7 @@ export class ProfileComponent {
   /** "June 2026" from createdAt. Empty if the date cannot be read, so the page never shows "Invalid Date". */
   readonly memberSince = computed(() => {
     const profile = this.profile();
-    const date = profile ? new Date(profile.createdAt) : null;
-    if (!date || isNaN(date.getTime())) {
-      return '';
-    }
-    return date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+    return profile ? formatMonthYear(profile.createdAt) : '';
   });
 
   constructor() {

@@ -1,0 +1,24 @@
+<div class="backdrop" (click)="close()"></div>
+
+<!-- Tab does nothing on purpose: the Close button is the only thing in the box, so the focus must stay on it -->
+<div
+  class="dialog"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="national-id-heading"
+  (keydown.tab)="$event.preventDefault()"
+>
+  <h2 id="national-id-heading">National ID of {{ name() }}</h2>
+
+  <p class="id">{{ nationalId() }}</p>
+
+  <!-- Not read out every second: a screen reader user gets the sentence once, and can press Close at any time -->
+  <p class="countdown">
+    This box closes by itself in <strong>{{ secondsLeft() }}</strong> seconds and the number is cleared from the screen.
+  </p>
+  <p class="audit">This view was recorded in the audit log.</p>
+
+  <div class="buttons">
+    <button #closeButton class="primary" type="button" (click)="close()">Close</button>
+  </div>
+</div>

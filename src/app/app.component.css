@@ -8,3 +8,26 @@
 main {
   flex: 1;
 }
+
+/* "Skip to main content": hidden above the page until the keyboard focuses it */
+.skip-link {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--primary);
+  color: var(--surface);
+  font-weight: 700;
+  transform: translateY(-200%);
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+/* The page area gets focus from the skip link, but it is not a control, so it needs no ring */
+main:focus {
+  outline: none;
+}

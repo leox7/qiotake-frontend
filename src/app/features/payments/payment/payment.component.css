@@ -46,17 +46,18 @@ h1 {
 }
 
 .muted {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 14px;
 }
 
 .warning {
   font-weight: 700;
-  color: var(--warning);
+  /* --warning alone is only 3.6 to 1 on white; mixed with the text colour it reads clearly (like the status badge) */
+  color: color-mix(in srgb, var(--warning) 65%, var(--text));
 }
 
 .phone {
-  color: var(--muted);
+  color: var(--muted-strong);
 }
 
 .countdown strong {
@@ -83,7 +84,7 @@ h1 {
 }
 
 .summary dt {
-  color: var(--muted);
+  color: var(--muted-strong);
 }
 
 .summary dd {
@@ -132,7 +133,7 @@ input[aria-invalid='true'] {
 }
 
 .hint {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 13px;
 }
 

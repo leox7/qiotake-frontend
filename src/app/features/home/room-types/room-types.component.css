@@ -21,6 +21,12 @@ h2 {
   line-height: 1.2;
 }
 
+.head a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -60,7 +66,7 @@ h2 {
 }
 
 .count {
-  color: color-mix(in srgb, var(--muted) 60%, var(--dark));
+  color: var(--muted-strong);
   font-size: 14px;
 }
 
@@ -71,7 +77,7 @@ h2 {
 
 .card.empty .name,
 .card.empty .price {
-  color: color-mix(in srgb, var(--muted) 60%, var(--dark));
+  color: var(--muted-strong);
 }
 
 .card.empty .price {

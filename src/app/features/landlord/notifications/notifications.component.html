@@ -20,7 +20,7 @@
             }
             {{ item.message }}
           </p>
-          <p class="date">{{ item.dateCreated | date: 'd MMM y, HH:mm' }}</p>
+          <p class="date">{{ dateText(item) }}</p>
         </div>
 
         @if (!item.read) {

@@ -5,6 +5,7 @@
 .logo {
   display: inline-flex;
   align-items: center;
+  min-height: 44px; /* a comfortable tap target */
   gap: 8px;
   text-decoration: none;
 }

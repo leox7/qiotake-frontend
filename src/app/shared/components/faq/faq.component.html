@@ -2,7 +2,8 @@
   @for (item of items; track item.question; let i = $index) {
     <div class="item" [class.open]="openIndex() === i">
       <!-- A real button, so Tab, Enter and Space work without extra code -->
-      <h3>
+      <!-- A div with role="heading" so the page can pick the level: 3 under the home page's h2, 2 under the FAQ page's h1 -->
+      <div class="heading" role="heading" [attr.aria-level]="headingLevel()">
         <button
           type="button"
           class="question"
@@ -16,7 +17,7 @@
             <path d="M6 9l6 6 6-6" />
           </svg>
         </button>
-      </h3>
+      </div>
 
       <!-- "hidden" hides it from the eye and from screen readers -->
       <div

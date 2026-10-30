@@ -33,7 +33,7 @@
 .tab.active {
   background: var(--primary);
   border-color: var(--primary);
-  color: #ffffff;
+  color: var(--surface);
 }
 
 .count {
@@ -47,14 +47,14 @@
 }
 
 .tab.active .count {
-  background: color-mix(in srgb, #ffffff 25%, transparent);
-  color: #ffffff;
+  background: color-mix(in srgb, var(--surface) 25%, transparent);
+  color: var(--surface);
 }
 
 /* the number of pending requests is highlighted so it is not missed */
 .count.attention {
   background: var(--warning);
-  color: #ffffff;
+  color: var(--surface);
 }
 
 /* ---- table ---- */
@@ -78,7 +78,7 @@ tr.needs-answer td:first-child {
 }
 
 .primary.small {
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 14px;
 }
 
@@ -159,7 +159,7 @@ tr.needs-answer td:first-child {
 }
 
 .details dt {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 14px;
   font-weight: 700;
 }
@@ -171,6 +171,6 @@ tr.needs-answer td:first-child {
 }
 
 .hint {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 14px;
 }

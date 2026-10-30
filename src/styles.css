@@ -5,7 +5,11 @@
   --bg: #f4fcfb;
   --surface: #ffffff;
   --border: #b4c9d1;
+  /* --muted is too light to read as text (2.8 to 1 on white). Use it only for borders, icons and
+     decoration. --muted-strong is the same blue-grey, darker: 5.0 to 1 on white, 4.8 to 1 on --bg.
+     Use it for hints, labels, table sub text and any other small grey text. */
   --muted: #809ea8;
+  --muted-strong: #4d6a74;
   --primary: #3b707d;
   --primary-hover: #2e5f6a;
   --dark: #273d42;
@@ -62,10 +66,28 @@ textarea {
   font: inherit;
 }
 
-/* Keyboard focus ring (only shows when navigating with the keyboard) */
+/* Keyboard focus ring (only shows when navigating with the keyboard).
+   --primary has 5.5 to 1 contrast on white; the pale --focus colour only has 1.8 to 1, too faint to see.
+   Components on a dark background set their own pale ring. */
 :focus-visible {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--primary);
   outline-offset: 2px;
+}
+
+/* Visitors who asked their device for less movement get no spinners, shimmer, slides or smooth scrolling */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Reusable classes */
@@ -147,6 +169,9 @@ textarea {
    <div class="table-card"><table class="portal-table"> ... every <td> gets data-label="Column name">
    A wide table scrolls sideways inside its card. Under 800px each row becomes a small card, the data-label is shown next to the value. */
 .table-card {
+  /* relative: the screen-reader-only texts inside the table are position:absolute, and without this
+     they escape the card's scrolling and make the whole PAGE scroll sideways */
+  position: relative;
   overflow-x: auto;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -167,7 +192,7 @@ textarea {
 }
 
 .portal-table th {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
@@ -220,7 +245,7 @@ textarea {
   .portal-table td::before {
     content: attr(data-label);
     flex: none;
-    color: var(--muted);
+    color: var(--muted-strong);
     font-size: 13px;
     font-weight: 700;
     text-align: left;
@@ -241,7 +266,7 @@ textarea {
 }
 
 .text-button {
-  min-height: 36px;
+  min-height: 44px;
   padding: 0 12px;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -293,4 +318,70 @@ textarea {
 .notice.error {
   background: color-mix(in srgb, var(--error) 8%, var(--surface));
   border-color: color-mix(in srgb, var(--error) 40%, var(--surface));
+}
+
+/* Admin tables (users, listings, bookings, payments, audit log) all look the same.
+   <div class="table-toolbar"> <div class="field"><label>..</label><select>..</select></div> </div>
+   sits above a <div class="table-card">. `.loading` dims the old rows while the next page is read. */
+.table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 16px;
+}
+
+.table-toolbar .field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.table-toolbar label {
+  color: var(--dark);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.table-toolbar select,
+.table-toolbar input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.table-card.loading {
+  opacity: 0.6;
+}
+
+.cell-strong {
+  color: var(--dark);
+  font-weight: 700;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+/* A table with many columns keeps a minimum width, so it scrolls sideways inside its card (never the page) */
+.portal-table.wide {
+  min-width: 860px;
+}
+
+/* Under 800px the rows are cards, so the minimum width goes away and the filters fill the row */
+@media (max-width: 799px) {
+  .portal-table.wide {
+    min-width: 0;
+  }
+
+  .table-toolbar .field {
+    flex: 1 1 100%;
+  }
+
+  .table-toolbar select,
+  .table-toolbar input {
+    width: 100%;
+  }
 }

@@ -5,21 +5,32 @@ import { Role, User } from '../models/user.model';
 const ACCESS_TOKEN_KEY = 'qiotake_access_token';
 const REFRESH_TOKEN_KEY = 'qiotake_refresh_token';
 const USER_KEY = 'qiotake_user';
+const REFRESH_EXPIRES_KEY = 'qiotake_refresh_expires_at';
 
 /**
  * Remembers who is logged in.
  *
  * - The access token (short-lived) goes in sessionStorage: it disappears when the tab closes.
  * - The refresh token (long-lived) goes in localStorage: it survives closing the browser.
+ *   The date it stops working sits next to it. It is only used by the profile page ("Your session ends on ...").
  * - The basic user details (name, email, role) sit next to the access token, so they disappear with it.
  *
  * `providedIn: 'root'` means Angular creates ONE shared copy that any class can ask for.
  */
 @Injectable({ providedIn: 'root' })
 export class TokenStorageService {
-  saveTokens(accessToken: string, refreshToken: string): void {
+  /**
+   * `refreshTokenExpiresAt` is the date-time the backend gives with every new refresh token. Each refresh
+   * replaces the token, so the date is replaced with it. If the backend sends none, an old date is removed.
+   */
+  saveTokens(accessToken: string, refreshToken: string, refreshTokenExpiresAt: string | null = null): void {
     sessionStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
     localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    if (refreshTokenExpiresAt) {
+      localStorage.setItem(REFRESH_EXPIRES_KEY, refreshTokenExpiresAt);
+    } else {
+      localStorage.removeItem(REFRESH_EXPIRES_KEY);
+    }
   }
 
   /** Keeps the basic user details (id, name, email, role). Storage only holds text, so we save JSON. */
@@ -33,6 +44,11 @@ export class TokenStorageService {
 
   getRefreshToken(): string | null {
     return localStorage.getItem(REFRESH_TOKEN_KEY);
+  }
+
+  /** When the saved refresh token stops working (ISO date-time), or null when we do not know. */
+  getRefreshTokenExpiresAt(): string | null {
+    return localStorage.getItem(REFRESH_EXPIRES_KEY);
   }
 
   /** The saved user, or null when nobody is logged in (or the saved text is damaged). */
@@ -69,5 +85,6 @@ export class TokenStorageService {
     sessionStorage.removeItem(ACCESS_TOKEN_KEY);
     sessionStorage.removeItem(USER_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_EXPIRES_KEY);
   }
 }

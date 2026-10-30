@@ -105,7 +105,14 @@
 <!-- ---------- Side panel with all the details ---------- -->
 @if (viewTarget(); as booking) {
   <div class="backdrop" (click)="closeView()"></div>
-  <aside class="panel" role="dialog" aria-modal="true" aria-labelledby="panel-title">
+  <aside
+    #panel
+    class="panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="panel-title"
+    (keydown)="keepFocusInside($event, panel)"
+  >
     <div class="panel-head">
       <h2 id="panel-title">Booking request #{{ booking.id }}</h2>
       <button class="panel-close text-button" type="button" (click)="closeView()">Close</button>

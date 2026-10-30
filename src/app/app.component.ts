@@ -40,6 +40,12 @@ export class AppComponent {
     return !OWN_LAYOUT_AREAS.includes(firstPart);
   });
 
+  // A plain "#main-content" link would be taken over by the router, so the click moves the focus by hand instead.
+  skipToContent(event: Event): void {
+    event.preventDefault();
+    document.getElementById('main-content')?.focus();
+  }
+
   // Exact match: "/listings" has no footer, but "/listings/5" (a listing's own page) still does
   readonly showFooter = computed(
     () => this.showNavbarAndFooter() && !NO_FOOTER_PAGES.includes(this.path().replace(/\/$/, '')),

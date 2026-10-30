@@ -1,0 +1,20 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* The student's email sits under their name */
+.email {
+  display: block;
+  color: var(--muted-strong);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 799px) {
+  /* On a phone the label is on the left, so the name and email line up to the right */
+  .email {
+    text-align: right;
+  }
+}

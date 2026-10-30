@@ -1,0 +1,87 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* The filters on the left, the "Create admin" button on the right. On a phone they stack. */
+.toolbar-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 16px;
+}
+
+.search-field {
+  min-width: 260px;
+}
+
+.count {
+  color: var(--muted-strong);
+  font-size: 14px;
+}
+
+/* Eight columns need more room than the usual 860px: the table scrolls inside its card instead of squeezing the text */
+@media (min-width: 800px) {
+  .portal-table.wide {
+    min-width: 1100px;
+  }
+
+  .email,
+  .cell-strong,
+  .actions-cell .text-button {
+    white-space: nowrap;
+  }
+}
+
+/* On a phone the card is narrow, so a long email may break anywhere */
+@media (max-width: 799px) {
+  .email {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* The role pill: grey for students, teal for landlords, dark for admins */
+.role {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.role.landlord {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--surface));
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+  color: var(--primary);
+}
+
+.role.admin {
+  border-color: var(--dark);
+  background: var(--dark);
+  color: var(--surface);
+}
+
+.verified {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.not-yet {
+  color: var(--muted-strong);
+}
+
+@media (max-width: 799px) {
+  .toolbar-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-field {
+    min-width: 0;
+  }
+}

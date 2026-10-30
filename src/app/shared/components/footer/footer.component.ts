@@ -17,6 +17,8 @@ export class FooterComponent {
   readonly phoneLink = 'tel:' + SITE_INFO.phone.replaceAll(' ', '');
 
   scrollToTop(): void {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Smooth scrolling only for visitors who did not ask their device for less motion
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   }
 }

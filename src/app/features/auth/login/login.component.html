@@ -18,7 +18,7 @@
         />
         <!-- Messages appear only after the person has touched the field -->
         @if (form.controls.email.touched && form.controls.email.errors; as errors) {
-          <p class="field-error" id="login-email-error">
+          <p class="field-error" id="login-email-error" role="alert">
             @if (errors['required']) {
               Enter your email.
             } @else {
@@ -50,7 +50,7 @@
           </button>
         </div>
         @if (form.controls.password.touched && form.controls.password.errors) {
-          <p class="field-error" id="login-password-error">Enter your password.</p>
+          <p class="field-error" id="login-password-error" role="alert">Enter your password.</p>
         }
       </div>
 

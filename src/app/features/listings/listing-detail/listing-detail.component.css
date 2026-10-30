@@ -51,7 +51,7 @@
 }
 
 .muted {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 14px;
 }
 
@@ -70,7 +70,7 @@ h1 {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  color: var(--muted);
+  color: var(--muted-strong);
 }
 
 .pill {
@@ -147,4 +147,16 @@ h2 {
   h1 {
     font-size: 28px;
   }
+}
+
+/* The small "Verified landlord" mark next to the host name */
+.verified-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--success) 12%, var(--surface));
+  color: color-mix(in srgb, var(--success) 85%, var(--text));
+  font-size: 13px;
+  font-weight: 700;
 }

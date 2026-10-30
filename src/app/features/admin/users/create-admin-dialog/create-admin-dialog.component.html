@@ -1,0 +1,123 @@
+<div class="backdrop" (click)="dismiss()"></div>
+
+<div
+  #box
+  class="dialog"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="create-admin-heading"
+  (keydown)="keepFocusInside($event, box)"
+>
+  <h2 id="create-admin-heading">Create an admin</h2>
+  <p class="lead">The new admin logs in with this email and password, then enters the 6 digit code sent to them.</p>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="two-columns">
+      <div class="field">
+        <label for="admin-first-name">First name</label>
+        <input
+          #firstNameInput
+          id="admin-first-name"
+          type="text"
+          formControlName="firstName"
+          autocomplete="off"
+          [class.invalid]="form.controls.firstName.touched && form.controls.firstName.invalid"
+          [attr.aria-invalid]="form.controls.firstName.touched && form.controls.firstName.invalid"
+          [attr.aria-describedby]="form.controls.firstName.touched && form.controls.firstName.invalid ? 'admin-first-name-error' : null"
+        />
+        @if (form.controls.firstName.touched && form.controls.firstName.errors; as errors) {
+          <p class="field-error" id="admin-first-name-error" role="alert">
+            @if (errors['required']) {
+              Enter a first name.
+            } @else if (errors['maxlength']) {
+              Use at most 50 characters.
+            } @else {
+              Use letters, spaces, hyphens and apostrophes only.
+            }
+          </p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="admin-last-name">Last name</label>
+        <input
+          id="admin-last-name"
+          type="text"
+          formControlName="lastName"
+          autocomplete="off"
+          [class.invalid]="form.controls.lastName.touched && form.controls.lastName.invalid"
+          [attr.aria-invalid]="form.controls.lastName.touched && form.controls.lastName.invalid"
+          [attr.aria-describedby]="form.controls.lastName.touched && form.controls.lastName.invalid ? 'admin-last-name-error' : null"
+        />
+        @if (form.controls.lastName.touched && form.controls.lastName.errors; as errors) {
+          <p class="field-error" id="admin-last-name-error" role="alert">
+            @if (errors['required']) {
+              Enter a last name.
+            } @else if (errors['maxlength']) {
+              Use at most 50 characters.
+            } @else {
+              Use letters, spaces, hyphens and apostrophes only.
+            }
+          </p>
+        }
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="admin-email">Email</label>
+      <input
+        id="admin-email"
+        type="email"
+        formControlName="email"
+        autocomplete="off"
+        [class.invalid]="form.controls.email.touched && form.controls.email.invalid"
+        [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
+        [attr.aria-describedby]="form.controls.email.touched && form.controls.email.invalid ? 'admin-email-error' : null"
+      />
+      @if (form.controls.email.touched && form.controls.email.errors; as errors) {
+        <p class="field-error" id="admin-email-error" role="alert">
+          @if (errors['required']) {
+            Enter an email address.
+          } @else {
+            Enter a valid email address.
+          }
+        </p>
+      }
+    </div>
+
+    <div class="field">
+      <label for="admin-password">Password</label>
+      <!-- new-password: the browser must not fill in the admin's own saved password here -->
+      <input
+        id="admin-password"
+        type="password"
+        formControlName="password"
+        autocomplete="new-password"
+        [class.invalid]="form.controls.password.touched && form.controls.password.invalid"
+        [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
+        [attr.aria-describedby]="form.controls.password.touched && form.controls.password.invalid ? 'admin-password-hint admin-password-error' : 'admin-password-hint'"
+      />
+      <p class="hint" id="admin-password-hint">At least 8 characters, with at least one number.</p>
+      @if (form.controls.password.touched && form.controls.password.errors; as errors) {
+        <p class="field-error" id="admin-password-error" role="alert">
+          @if (errors['required']) {
+            Enter a password.
+          } @else {
+            Use at least 8 characters and at least one number.
+          }
+        </p>
+      }
+    </div>
+
+    @if (errorText()) {
+      <p class="form-error" role="alert">{{ errorText() }}</p>
+    }
+
+    <div class="buttons">
+      <button class="secondary" type="button" [disabled]="saving()" (click)="dismiss()">Cancel</button>
+      <button class="primary" type="submit" [disabled]="saving()">
+        {{ saving() ? 'Creating...' : 'Create admin' }}
+      </button>
+    </div>
+  </form>
+</div>

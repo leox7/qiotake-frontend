@@ -62,15 +62,6 @@ export const LANDLORD_ROUTES: Routes = [
     loadComponent: () => import('./payments/payments.component').then((m) => m.PaymentsComponent),
   },
 
-  // Reports is still a placeholder: prompt 17 builds it.
-  {
-    path: 'reports',
-    title: 'Reports',
-    data: { header: { eyebrow: 'Insights', heading: 'Reports' } },
-    loadComponent: () =>
-      import('./landlord-placeholder/landlord-placeholder.component').then((m) => m.LandlordPlaceholderComponent),
-  },
-
   {
     path: 'notifications',
     title: 'Notifications',

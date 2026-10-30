@@ -43,4 +43,22 @@ export interface Payment {
   mpesaReceiptNumber: string | null;
   /** ISO date-time. */
   dateCreated: string;
+  /** ISO date-time of when the payment became PAID. null for every other status. */
+  paidAt: string | null;
+  /** A short friendly reason, for FAILED payments only. null otherwise. */
+  failureReason: string | null;
+}
+
+/**
+ * A payment as the landlord and the admin see it (PaymentWithStudentResponseDto): the same, plus who paid.
+ * Only the name, never the phone number or the email.
+ */
+export interface PaymentWithStudent extends Payment {
+  studentFirstName: string;
+  studentLastName: string;
+}
+
+/** GET /api/payments/config (PaymentConfigDto): which payment mode is switched on. Nothing secret. */
+export interface PaymentConfig {
+  provider: PaymentProvider;
 }

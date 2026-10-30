@@ -1,0 +1,61 @@
+<div class="table-toolbar">
+  <div class="field">
+    <label for="payment-status">Status</label>
+    <select id="payment-status" (change)="onStatusChange($event)">
+      @for (option of statusOptions; track option.value) {
+        <option [value]="option.value" [selected]="option.value === statusFilter()">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+</div>
+
+@if (error()) {
+  <app-error-message [message]="error()" (retry)="load()" />
+} @else if (loading() && !result()) {
+  <span class="visually-hidden">Loading the payments...</span>
+  <div class="table-card">
+    @for (row of skeletonRows; track row) {
+      <app-skeleton kind="row" [columns]="7" />
+    }
+  </div>
+} @else if (result(); as data) {
+  @if (data.totalElements === 0) {
+    @if (statusFilter() === '') {
+      <app-empty-state icon="card" heading="No payments yet" text="When a student pays a deposit or rent, the payment shows here." />
+    } @else {
+      <app-empty-state icon="search" heading="No payments with this status" text="Try another status." />
+    }
+  } @else {
+    <!-- While the next page loads, the old rows stay on screen, dimmed -->
+    <div class="table-card" [class.loading]="loading()" [attr.aria-busy]="loading()">
+      <table class="portal-table wide">
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Student</th>
+            <th scope="col">Listing</th>
+            <th scope="col">Type</th>
+            <th scope="col">Amount</th>
+            <th scope="col">Status</th>
+            <th scope="col">Receipt</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (payment of data.content; track payment.id) {
+            <tr>
+              <td data-label="Date" class="nowrap">{{ dateText(payment) }}</td>
+              <td data-label="Student" class="cell-strong">{{ studentName(payment) }}</td>
+              <td data-label="Listing">{{ payment.listingTitle }}</td>
+              <td data-label="Type">{{ typeLabel(payment) }}</td>
+              <td data-label="Amount" class="nowrap">{{ payment.amount | money }}</td>
+              <td data-label="Status"><app-status-badge [status]="payment.status" /></td>
+              <td data-label="Receipt">{{ payment.mpesaReceiptNumber || '-' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [page]="data.page" [totalPages]="data.totalPages" (pageChange)="goToPage($event)" />
+  }
+}

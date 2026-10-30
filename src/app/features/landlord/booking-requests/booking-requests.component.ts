@@ -6,6 +6,7 @@ import { ToastService } from '../../../core/services/toast.service';
 import { getApiErrorMessage, shouldToastHere } from '../../../core/utils/api-error';
 import { formatDate, formatDateTime } from '../../../core/utils/format-date';
 import { MAX_PAGE_SIZE, loadAllPages } from '../../../core/utils/load-all-pages';
+import { trapFocus } from '../../../core/utils/trap-focus';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { ErrorMessageComponent } from '../../../shared/components/error-message/error-message.component';
@@ -196,6 +197,11 @@ export class BookingRequestsComponent {
   closeView(): void {
     this.viewTarget.set(null);
     this.restoreFocus();
+  }
+
+  /** Keep the Tab key inside the box, so keyboard users cannot "fall out" behind it. */
+  keepFocusInside(event: KeyboardEvent, box: HTMLElement): void {
+    trapFocus(event, box);
   }
 
   private restoreFocus(): void {

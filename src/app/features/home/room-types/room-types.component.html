@@ -15,7 +15,7 @@
             <a class="card" [class.empty]="row.availableCount === 0" routerLink="/listings" [queryParams]="{ type: row.roomType }">
               <span class="name">{{ labels[row.roomType] }}</span>
               @if (row.availableCount > 0 && row.lowestPrice !== null) {
-                <span class="price">From KES {{ row.lowestPrice | number: '1.0-0' }}</span>
+                <span class="price">From {{ row.lowestPrice | money }}</span>
                 <span class="count">{{ row.availableCount }} {{ row.availableCount === 1 ? 'home' : 'homes' }}</span>
               } @else {
                 <span class="price">No homes right now</span>

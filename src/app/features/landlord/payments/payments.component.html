@@ -22,7 +22,7 @@
   <div class="stats">
     <section class="stat">
       <h2>Received this month</h2>
-      <p class="value">KES {{ receivedThisMonth() | number: '1.0-0' }}</p>
+      <p class="value">{{ receivedThisMonth() | money }}</p>
     </section>
     <section class="stat">
       <h2>Successful payments this month</h2>
@@ -60,10 +60,10 @@
           @for (payment of rows(); track payment.id) {
             <tr>
               <td data-label="Date" class="nowrap">{{ dateText(payment) }}</td>
-              <td data-label="Student" class="strong">{{ payment.studentFirstName }}</td>
+              <td data-label="Student" class="strong">{{ studentName(payment) }}</td>
               <td data-label="Listing">{{ payment.listingTitle }}</td>
               <td data-label="Type">{{ typeLabel(payment) }}</td>
-              <td data-label="Amount" class="nowrap">KES {{ payment.amount | number: '1.0-0' }}</td>
+              <td data-label="Amount" class="nowrap">{{ payment.amount | money }}</td>
               <td data-label="Status"><app-status-badge [status]="payment.status" /></td>
               <td data-label="Receipt">{{ payment.mpesaReceiptNumber ?? '-' }}</td>
             </tr>

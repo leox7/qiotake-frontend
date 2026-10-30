@@ -1,4 +1,3 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Listing, ROOM_TYPE_LABELS } from '../../../core/models/listing.model';
@@ -13,6 +12,7 @@ import { ErrorMessageComponent } from '../../../shared/components/error-message/
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { SkeletonComponent } from '../../../shared/components/skeleton/skeleton.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { MoneyPipe } from '../../../core/pipes/money.pipe';
 
 const PAGE_SIZE = 10;
 
@@ -22,16 +22,7 @@ const PAGE_SIZE = 10;
  */
 @Component({
   selector: 'app-my-listings',
-  imports: [
-    DecimalPipe,
-    RouterLink,
-    ConfirmDialogComponent,
-    EmptyStateComponent,
-    ErrorMessageComponent,
-    PaginationComponent,
-    SkeletonComponent,
-    StatusBadgeComponent,
-  ],
+  imports: [RouterLink, ConfirmDialogComponent, EmptyStateComponent, ErrorMessageComponent, PaginationComponent, SkeletonComponent, StatusBadgeComponent, MoneyPipe],
   templateUrl: './my-listings.component.html',
   styleUrl: './my-listings.component.css',
 })

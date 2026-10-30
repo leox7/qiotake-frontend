@@ -29,3 +29,12 @@ export function formatDateTime(text: string): string {
   const time = date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
   return `${day}, ${time}`;
 }
+
+/** Turns a backend date or date-time such as "2026-06-14T10:00:00" into "June 2026" (used for "Member since"). */
+export function formatMonthYear(text: string): string {
+  const date = new Date(text);
+  if (Number.isNaN(date.getTime())) {
+    return ''; // the caller hides the line instead of showing "Invalid Date"
+  }
+  return date.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+}

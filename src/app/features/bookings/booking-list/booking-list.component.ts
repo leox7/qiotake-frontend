@@ -1,31 +1,35 @@
 import { Component, DestroyRef, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Booking, PAST_STATUSES } from '../../../core/models/booking.model';
+import { Booking, BookingCounts, BookingTab } from '../../../core/models/booking.model';
+import { PagedResponse } from '../../../core/models/paged-response.model';
 import { BookingService } from '../../../core/services/booking.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { getApiErrorMessage, shouldToastHere } from '../../../core/utils/api-error';
 import { formatDate } from '../../../core/utils/format-date';
+import { getImageUrl } from '../../../core/utils/image-url';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { ErrorMessageComponent } from '../../../shared/components/error-message/error-message.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { SkeletonComponent } from '../../../shared/components/skeleton/skeleton.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { MoneyPipe } from '../../../core/pipes/money.pipe';
 
-/** The backend allows at most 50 bookings per request. */
-const BACKEND_PAGE_SIZE = 50;
-
-/** How many bookings one screen page shows. */
-const SCREEN_PAGE_SIZE = 10;
+/** How many bookings one page shows. The backend does the paging. */
+const PAGE_SIZE = 10;
 
 type TabKey = 'all' | 'pending' | 'confirmed' | 'past';
 
-/** The tabs, in order. `matches` says which bookings belong to the tab. */
-const TABS: { key: TabKey; label: string; matches: (booking: Booking) => boolean }[] = [
-  { key: 'all', label: 'All', matches: () => true },
-  { key: 'pending', label: 'Pending', matches: (b) => b.status === 'PENDING' },
-  { key: 'confirmed', label: 'Confirmed', matches: (b) => b.status === 'CONFIRMED' },
-  { key: 'past', label: 'Past', matches: (b) => PAST_STATUSES.includes(b.status) },
+/**
+ * The tabs, in order. `status` is what we send to the backend for that tab (nothing for "All").
+ * `PAST` is the backend's own group for cancelled and vacated bookings together.
+ */
+const TABS: { key: TabKey; label: string; status?: BookingTab }[] = [
+  { key: 'all', label: 'All' },
+  { key: 'pending', label: 'Pending', status: 'PENDING' },
+  { key: 'confirmed', label: 'Confirmed', status: 'CONFIRMED' },
+  { key: 'past', label: 'Past', status: 'PAST' },
 ];
 
 /** What the empty state says for each tab. */
@@ -39,20 +43,12 @@ const EMPTY_TEXT: Record<TabKey, { heading: string; text: string }> = {
 /**
  * /bookings: the student's own bookings.
  *
- * The backend can only list bookings page by page (newest first). It cannot filter by status and it
- * does not send counts. To show a real count on every tab, we load ALL the student's bookings once
- * (a student has very few), and then filter, count and split into screen pages here in the browser.
+ * The backend does the work: each tab asks for its own status (and its own page), and the numbers on the
+ * tabs come from GET /api/bookings/my/counts. So the page never loads every booking just to filter or count them.
  */
 @Component({
   selector: 'app-booking-list',
-  imports: [
-    RouterLink,
-    StatusBadgeComponent,
-    SkeletonComponent,
-    EmptyStateComponent,
-    ErrorMessageComponent,
-    ConfirmDialogComponent,
-  ],
+  imports: [RouterLink, StatusBadgeComponent, SkeletonComponent, EmptyStateComponent, ErrorMessageComponent, ConfirmDialogComponent, PaginationComponent, MoneyPipe],
   templateUrl: './booking-list.component.html',
   styleUrl: './booking-list.component.css',
 })
@@ -62,13 +58,16 @@ export class BookingListComponent {
 
   readonly tabs = TABS;
 
-  // Every booking of this student.
-  readonly bookings = signal<Booking[]>([]);
+  /** The page of bookings for the active tab. */
+  readonly result = signal<PagedResponse<Booking> | null>(null);
   readonly loading = signal(true);
   readonly errorText = signal('');
 
+  /** The numbers on the tabs. null until they arrive (or if they could not be read: then the tabs show no number). */
+  readonly counts = signal<BookingCounts | null>(null);
+
   readonly activeTab = signal<TabKey>('all');
-  /** The screen page inside the active tab, starting at 0. */
+  /** The page inside the active tab, starting at 0. */
   readonly page = signal(0);
 
   // Cancelling: `bookingToCancel` is the booking the dialog is asking about (null = dialog closed).
@@ -79,35 +78,6 @@ export class BookingListComponent {
 
   private request?: Subscription;
 
-  /** How many bookings each tab has, e.g. { all: 4, pending: 1, confirmed: 1, past: 2 }. */
-  readonly counts = computed(() => {
-    const counts = {} as Record<TabKey, number>;
-    for (const tab of TABS) {
-      counts[tab.key] = this.bookings().filter(tab.matches).length;
-    }
-    return counts;
-  });
-
-  /** The bookings of the active tab. */
-  private readonly tabBookings = computed(() => {
-    const tab = TABS.find((t) => t.key === this.activeTab()) ?? TABS[0];
-    return this.bookings().filter(tab.matches);
-  });
-
-  readonly totalPages = computed(() => Math.ceil(this.tabBookings().length / SCREEN_PAGE_SIZE));
-
-  // After a cancel the last page may disappear, so never go past the last page that still exists.
-  readonly currentPage = computed(() => Math.min(this.page(), Math.max(0, this.totalPages() - 1)));
-
-  /** The bookings shown on screen right now. */
-  readonly visibleBookings = computed(() => {
-    const start = this.currentPage() * SCREEN_PAGE_SIZE;
-    return this.tabBookings().slice(start, start + SCREEN_PAGE_SIZE);
-  });
-
-  /** Page numbers starting at 1, for the buttons. */
-  readonly pageNumbers = computed(() => Array.from({ length: this.totalPages() }, (_, i) => i + 1));
-
   readonly emptyText = computed(() => EMPTY_TEXT[this.activeTab()]);
 
   // Three grey rows while loading.
@@ -115,29 +85,28 @@ export class BookingListComponent {
 
   constructor() {
     this.load();
+    this.loadCounts();
     inject(DestroyRef).onDestroy(() => this.request?.unsubscribe());
   }
 
-  /** Loads all bookings. Also used by Retry and after a failed cancel. */
+  /** Loads the page of the active tab. Also used by Retry and after a cancel. */
   load(): void {
+    const status = TABS.find((tab) => tab.key === this.activeTab())?.status;
+
     this.request?.unsubscribe();
     this.loading.set(true);
     this.errorText.set('');
-    this.loadPage(0, []);
-  }
 
-  // Asks for one backend page, and if there are more, for the next one, until we have them all.
-  private loadPage(pageNumber: number, collected: Booking[]): void {
-    this.request = this.bookingService.getMyBookings(pageNumber, BACKEND_PAGE_SIZE).subscribe({
+    this.request = this.bookingService.getMyBookings(this.page(), PAGE_SIZE, status).subscribe({
       next: (result) => {
-        const everything = [...collected, ...result.content];
-        // `result.content.length === 0` is a safety stop, so a strange answer can never loop forever.
-        if (result.last || result.content.length === 0) {
-          this.bookings.set(everything);
-          this.loading.set(false);
-        } else {
-          this.loadPage(pageNumber + 1, everything);
+        // The last booking of the last page just left this tab (for example it was cancelled): go one page back
+        if (result.content.length === 0 && this.page() > 0) {
+          this.page.set(this.page() - 1);
+          this.load();
+          return;
         }
+        this.result.set(result);
+        this.loading.set(false);
       },
       error: (error) => {
         this.errorText.set(getApiErrorMessage(error));
@@ -146,13 +115,28 @@ export class BookingListComponent {
     });
   }
 
+  /** Reads the numbers for the tabs. They are only decoration, so a failure is ignored: the tabs just show no number. */
+  private loadCounts(): void {
+    this.bookingService.getMyBookingCounts().subscribe({
+      next: (counts) => this.counts.set(counts),
+      error: () => undefined,
+    });
+  }
+
+  /** The number on a tab, or null when we do not have the counts. */
+  countOf(tab: TabKey): number | null {
+    return this.counts()?.[tab] ?? null;
+  }
+
   selectTab(key: TabKey): void {
     this.activeTab.set(key);
     this.page.set(0);
+    this.load();
   }
 
-  goToPage(pageNumber: number): void {
-    this.page.set(pageNumber - 1);
+  goToPage(page: number): void {
+    this.page.set(page);
+    this.load();
   }
 
   // ---- cancelling ----
@@ -176,12 +160,13 @@ export class BookingListComponent {
     this.cancelling.set(true);
 
     this.bookingService.cancelBooking(booking.id).subscribe({
-      next: (updated) => {
-        // Swap the old booking for the updated one. The row moves to the "Past" tab by itself.
-        this.bookings.update((list) => list.map((b) => (b.id === updated.id ? updated : b)));
+      next: () => {
         this.cancelling.set(false);
         this.closeDialog();
         this.toast.success('Your booking request was cancelled.');
+        // The booking moves from Pending to Past, so read the list and the numbers again
+        this.load();
+        this.loadCounts();
       },
       error: (error) => {
         this.cancelling.set(false);
@@ -191,8 +176,9 @@ export class BookingListComponent {
         if (shouldToastHere(error)) {
           this.toast.error(getApiErrorMessage(error));
         }
-        // The list may be out of date (for example the landlord just confirmed it), so reload it.
+        // The list may be out of date (for example the landlord just confirmed it), so reload both.
         this.load();
+        this.loadCounts();
       },
     });
   }
@@ -202,5 +188,23 @@ export class BookingListComponent {
   /** "1 June 2026 to 31 May 2027" */
   dateRange(booking: Booking): string {
     return `${formatDate(booking.startDate)} to ${formatDate(booking.endDate)}`;
+  }
+
+  /** The listing's photo address, or null when the listing has none (the card then shows a placeholder). */
+  photo(booking: Booking): string | null {
+    return getImageUrl(booking.listingImageUrl);
+  }
+
+  /** The text of the pay button. The backend says what is due next, so there is no guessing here. */
+  payLabel(booking: Booking): string {
+    if (booking.nextPaymentType === 'RENT' && booking.nextPaymentDueDate) {
+      return `Pay rent due ${formatDate(booking.nextPaymentDueDate)}`;
+    }
+    return booking.nextPaymentType === 'RENT' ? 'Pay rent' : 'Pay deposit';
+  }
+
+  /** "1 June 2026": the day the next payment is due, or '' when the backend sends no date. */
+  dueDate(booking: Booking): string {
+    return booking.nextPaymentDueDate ? formatDate(booking.nextPaymentDueDate) : '';
   }
 }

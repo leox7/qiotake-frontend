@@ -1,0 +1,140 @@
+/* The builder on the left, the report on the right. Under 1000px they stack. */
+:host {
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.builder,
+.viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.builder {
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+h2 {
+  color: var(--dark);
+  font-size: 18px;
+}
+
+.two-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* min-width: 0 lets a field shrink instead of pushing the form wider than its card */
+  min-width: 0;
+}
+
+label,
+legend {
+  color: var(--dark);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+input[type='date'],
+select {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+}
+
+input.invalid {
+  border-color: var(--error);
+}
+
+.hint {
+  color: var(--muted-strong);
+  font-size: 13px;
+}
+
+.field-error {
+  color: var(--error);
+  font-size: 13px;
+}
+
+/* The tick boxes */
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.check input {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- the report ---- */
+
+.viewer {
+  min-width: 0;
+}
+
+.viewer-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+/* A fixed height: the report scrolls inside this box, the page does not grow with it */
+.report-frame {
+  display: block;
+  width: 100%;
+  height: 70vh;
+  min-height: 480px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  /* The report page has its own look, the frame behind it must not be see-through */
+  background: var(--surface);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 999px) {
+  :host {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 599px) {
+  .report-frame {
+    height: 60vh;
+    min-height: 360px;
+  }
+}

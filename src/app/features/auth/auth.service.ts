@@ -45,7 +45,7 @@ export class AuthService {
     return this.http.post<LoginResponse>(`${this.baseUrl}/verify-otp`, request).pipe(
       // tap = "do something with the answer, then pass it on unchanged"
       tap((response) => {
-        this.tokens.saveTokens(response.token, response.refreshToken);
+        this.tokens.saveTokens(response.token, response.refreshToken, response.refreshTokenExpiresAt);
         // setUser saves the user details AND tells the navbar (and every other screen) who logged in.
         this.authState.setUser({
           id: response.id,

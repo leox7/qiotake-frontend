@@ -34,8 +34,11 @@
       @if (listing().landlordFirstName) {
         <span class="landlord">By {{ listing().landlordFirstName }}</span>
       }
+      @if (listing().landlordVerified) {
+        <span class="verified"><span aria-hidden="true">&#10003;</span> Verified</span>
+      }
     </div>
 
-    <p class="price"><strong>KES {{ listing().price | number: '1.0-2' }}</strong> / month</p>
+    <p class="price"><strong>{{ listing().price | money }}</strong> / month</p>
   </div>
 </article>

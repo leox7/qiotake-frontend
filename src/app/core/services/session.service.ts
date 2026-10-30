@@ -7,10 +7,12 @@ import { AuthStateService } from './auth-state.service';
 import { TokenStorageService } from './token-storage.service';
 import { ToastService } from './toast.service';
 
-/** The two fields of the backend answer to POST /api/auth/refresh that we need. */
+/** The fields of the backend answer to POST /api/auth/refresh that we need. */
 interface RefreshResponse {
   token: string;
   refreshToken: string;
+  /** When the NEW refresh token stops working. */
+  refreshTokenExpiresAt: string | null;
 }
 
 /**
@@ -63,7 +65,9 @@ export class SessionService {
       .pipe(
         // Step 3: the backend sends a NEW refresh token every time (the old one is now dead),
         // so we save both. Saving here means every waiting request finds the new token in storage.
-        tap((response) => this.tokens.saveTokens(response.token, response.refreshToken)),
+        tap((response) =>
+          this.tokens.saveTokens(response.token, response.refreshToken, response.refreshTokenExpiresAt),
+        ),
         map((response) => response.token),
         // Step 4: when the call ends (success OR failure) free the slot, so a refresh
         // later in the session (10 minutes from now) can start a fresh call.

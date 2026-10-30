@@ -46,9 +46,11 @@
             formControlName="firstName"
             autocomplete="given-name"
             [class.invalid]="form.controls.firstName.touched && form.controls.firstName.invalid"
+            [attr.aria-invalid]="form.controls.firstName.touched && form.controls.firstName.invalid"
+            [attr.aria-describedby]="form.controls.firstName.touched && form.controls.firstName.invalid ? 'reg-first-name-error' : null"
           />
           @if (form.controls.firstName.touched && form.controls.firstName.errors; as errors) {
-            <p class="field-error">
+            <p class="field-error" id="reg-first-name-error" role="alert">
               @if (errors['required']) {
                 Enter your first name.
               } @else if (errors['maxlength']) {
@@ -68,9 +70,11 @@
             formControlName="lastName"
             autocomplete="family-name"
             [class.invalid]="form.controls.lastName.touched && form.controls.lastName.invalid"
+            [attr.aria-invalid]="form.controls.lastName.touched && form.controls.lastName.invalid"
+            [attr.aria-describedby]="form.controls.lastName.touched && form.controls.lastName.invalid ? 'reg-last-name-error' : null"
           />
           @if (form.controls.lastName.touched && form.controls.lastName.errors; as errors) {
-            <p class="field-error">
+            <p class="field-error" id="reg-last-name-error" role="alert">
               @if (errors['required']) {
                 Enter your last name.
               } @else if (errors['maxlength']) {
@@ -92,12 +96,14 @@
           autocomplete="email"
           [placeholder]="isLandlord() ? 'you@example.com' : 'you' + studentEmailEnding"
           [class.invalid]="form.controls.email.touched && form.controls.email.invalid"
+          [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid"
+          [attr.aria-describedby]="form.controls.email.touched && form.controls.email.invalid ? 'reg-email-hint reg-email-error' : 'reg-email-hint'"
         />
         @if (!isLandlord()) {
-          <p class="hint">Must end with {{ studentEmailEnding }}</p>
+          <p class="hint" id="reg-email-hint">Must end with {{ studentEmailEnding }}</p>
         }
         @if (form.controls.email.touched && form.controls.email.errors; as errors) {
-          <p class="field-error">
+          <p class="field-error" id="reg-email-error" role="alert">
             @if (errors['server']) {
               {{ errors['server'] }}
             } @else if (errors['required']) {
@@ -121,9 +127,11 @@
             autocomplete="tel"
             placeholder="0712 345 678"
             [class.invalid]="form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid"
+            [attr.aria-invalid]="form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid"
+            [attr.aria-describedby]="form.controls.phoneNumber.touched && form.controls.phoneNumber.invalid ? 'reg-phone-error' : null"
           />
           @if (form.controls.phoneNumber.touched && form.controls.phoneNumber.errors; as errors) {
-            <p class="field-error">
+            <p class="field-error" id="reg-phone-error" role="alert">
               @if (errors['required']) {
                 Enter your phone number.
               } @else {
@@ -142,10 +150,12 @@
             formControlName="nationalId"
             autocomplete="off"
             [class.invalid]="form.controls.nationalId.touched && form.controls.nationalId.invalid"
+            [attr.aria-invalid]="form.controls.nationalId.touched && form.controls.nationalId.invalid"
+            [attr.aria-describedby]="form.controls.nationalId.touched && form.controls.nationalId.invalid ? 'reg-national-id-hint reg-national-id-error' : 'reg-national-id-hint'"
           />
-          <p class="hint">Digits only, 7 or 8 digits.</p>
+          <p class="hint" id="reg-national-id-hint">Digits only, 7 or 8 digits.</p>
           @if (form.controls.nationalId.touched && form.controls.nationalId.errors; as errors) {
-            <p class="field-error">
+            <p class="field-error" id="reg-national-id-error" role="alert">
               @if (errors['required']) {
                 Enter your national ID number.
               } @else if (errors['pattern']) {
@@ -167,6 +177,8 @@
             formControlName="password"
             autocomplete="new-password"
             [class.invalid]="form.controls.password.touched && form.controls.password.invalid"
+            [attr.aria-invalid]="form.controls.password.touched && form.controls.password.invalid"
+            [attr.aria-describedby]="form.controls.password.touched && form.controls.password.invalid ? 'reg-password-hint reg-password-error' : 'reg-password-hint'"
           />
           <button
             type="button"
@@ -177,9 +189,9 @@
             {{ showPassword() ? 'Hide' : 'Show' }}
           </button>
         </div>
-        <p class="hint">At least 8 characters and one number.</p>
+        <p class="hint" id="reg-password-hint">At least 8 characters and one number.</p>
         @if (form.controls.password.touched && form.controls.password.errors; as errors) {
-          <p class="field-error">
+          <p class="field-error" id="reg-password-error" role="alert">
             @if (errors['required']) {
               Choose a password.
             } @else {

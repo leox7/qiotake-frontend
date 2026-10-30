@@ -24,7 +24,7 @@
 }
 
 .links a {
-  padding: 8px 0;
+  padding: 10px 0;
   border-bottom: 2px solid transparent;
   color: var(--dark);
   font-weight: 500;
@@ -179,7 +179,7 @@
 
   .signed-in-as {
     padding: 8px 0;
-    color: var(--muted);
+    color: var(--muted-strong);
     font-size: 14px;
   }
 

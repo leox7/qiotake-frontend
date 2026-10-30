@@ -15,9 +15,9 @@
         (click)="selectTab(tab.key)"
       >
         {{ tab.label }}
-        <!-- Counts only show once the bookings have loaded, so we never show a wrong 0 -->
-        @if (!loading() && !errorText()) {
-          <span class="count">{{ counts()[tab.key] }}</span>
+        <!-- The number comes from the backend. It only shows once we have it, so we never show a wrong 0 -->
+        @if (countOf(tab.key) !== null) {
+          <span class="count">{{ countOf(tab.key) }}</span>
         }
       </button>
     }
@@ -25,88 +25,87 @@
 
   @if (errorText()) {
     <app-error-message [message]="errorText()" (retry)="load()" />
-  } @else if (loading()) {
+  } @else if (loading() && !result()) {
     <span class="visually-hidden">Loading your bookings...</span>
     <div class="list">
       @for (row of skeletonRows; track row) {
         <app-skeleton kind="card" />
       }
     </div>
-  } @else if (visibleBookings().length === 0) {
-    @if (activeTab() === 'all') {
-      <app-empty-state
-        icon="calendar"
-        [heading]="emptyText().heading"
-        [text]="emptyText().text"
-        buttonLabel="Browse homes"
-        buttonLink="/listings"
-      />
-    } @else {
-      <app-empty-state icon="calendar" [heading]="emptyText().heading" [text]="emptyText().text" />
-    }
-  } @else {
-    <ul class="list">
-      @for (booking of visibleBookings(); track booking.id) {
-        <li class="card">
-          <!-- The backend does not send a photo with a booking yet, so every row shows the placeholder -->
-          <div class="thumb" aria-hidden="true">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 11l9-8 9 8" />
-              <path d="M5 10v10h14V10" />
-              <path d="M10 20v-6h4v6" />
-            </svg>
-          </div>
-
-          <div class="info">
-            <app-status-badge [status]="booking.status" />
-            <h2><a [routerLink]="['/listings', booking.listingId]">{{ booking.listingTitle }}</a></h2>
-            <p class="dates">{{ dateRange(booking) }}</p>
-            <p class="area">{{ booking.listingLocation }}</p>
-
-            @if (booking.status === 'CONFIRMED') {
-              <p class="note">Landlord contact details were sent to your email.</p>
-            }
-          </div>
-
-          <div class="actions">
-            @if (booking.status === 'PENDING') {
-              <button class="secondary" type="button" (click)="askToCancel(booking, $event)">
-                Cancel request
-              </button>
-            } @else if (booking.status === 'CONFIRMED') {
-              <!-- The backend does not say whether the deposit is paid, so one neutral button for payments -->
-              <a class="primary" [routerLink]="['/bookings', booking.id, 'pay']">Make a payment</a>
-            }
-          </div>
-        </li>
+  } @else if (result(); as data) {
+    @if (data.content.length === 0) {
+      @if (activeTab() === 'all') {
+        <app-empty-state
+          icon="calendar"
+          [heading]="emptyText().heading"
+          [text]="emptyText().text"
+          buttonLabel="Browse homes"
+          buttonLink="/listings"
+        />
+      } @else {
+        <app-empty-state icon="calendar" [heading]="emptyText().heading" [text]="emptyText().text" />
       }
-    </ul>
+    } @else {
+      <!-- While another tab or page loads, the old cards stay on screen, dimmed -->
+      <ul class="list" [class.loading]="loading()" [attr.aria-busy]="loading()">
+        @for (booking of data.content; track booking.id) {
+          <li class="card">
+            <div class="thumb">
+              @if (photo(booking); as src) {
+                <!-- alt is empty because the title next to it already names the home -->
+                <img [src]="src" alt="" loading="lazy" />
+              } @else {
+                <!-- The listing has no photo yet: a neutral placeholder -->
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 11l9-8 9 8" />
+                  <path d="M5 10v10h14V10" />
+                  <path d="M10 20v-6h4v6" />
+                </svg>
+              }
+            </div>
 
-    @if (totalPages() > 1) {
-      <nav class="pagination" aria-label="Pages">
-        <button class="secondary" type="button" [disabled]="currentPage() === 0" (click)="goToPage(currentPage())">
-          Previous
-        </button>
-        @for (number of pageNumbers(); track number) {
-          <button
-            class="page-number"
-            type="button"
-            [class.current]="number === currentPage() + 1"
-            [attr.aria-current]="number === currentPage() + 1 ? 'page' : null"
-            (click)="goToPage(number)"
-          >
-            <span class="visually-hidden">Page </span>{{ number }}
-          </button>
+            <div class="info">
+              <app-status-badge [status]="booking.status" />
+              <h2><a [routerLink]="['/listings', booking.listingId]">{{ booking.listingTitle }}</a></h2>
+              <p class="dates">{{ dateRange(booking) }}</p>
+              <p class="area">{{ booking.listingLocation }}</p>
+
+              @if (booking.status === 'CONFIRMED') {
+                <p class="note">Landlord contact details were sent to your email.</p>
+              }
+            </div>
+
+            <div class="actions">
+              @if (booking.status === 'PENDING') {
+                <button class="secondary" type="button" (click)="askToCancel(booking, $event)">
+                  Cancel request
+                </button>
+              } @else if (booking.status === 'CONFIRMED') {
+                <!-- The backend says what is due next, so each state has its own button (or none) -->
+                @if (booking.nextPaymentType === 'NONE') {
+                  @if (booking.depositPaid) {
+                    <p class="paid">Deposit paid</p>
+                  }
+                } @else {
+                  <div class="pay">
+                    <a class="primary" [routerLink]="['/bookings', booking.id, 'pay']">{{ payLabel(booking) }}</a>
+                    @if (booking.nextPaymentAmount !== null) {
+                      <p class="pay-note">
+                        {{ booking.nextPaymentAmount | money }}
+                        @if (booking.nextPaymentType === 'DEPOSIT' && dueDate(booking)) {
+                          · due {{ dueDate(booking) }}
+                        }
+                      </p>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          </li>
         }
-        <button
-          class="secondary"
-          type="button"
-          [disabled]="currentPage() >= totalPages() - 1"
-          (click)="goToPage(currentPage() + 2)"
-        >
-          Next
-        </button>
-      </nav>
+      </ul>
+
+      <app-pagination [page]="data.page" [totalPages]="data.totalPages" (pageChange)="goToPage($event)" />
     }
   }
 </section>

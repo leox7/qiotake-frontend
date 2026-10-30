@@ -1,0 +1,114 @@
+<!-- ---------- The report builder ---------- -->
+<form class="builder" [formGroup]="form" (ngSubmit)="generate()" novalidate aria-labelledby="builder-title">
+  <h2 id="builder-title">Report builder</h2>
+
+  <div class="two-columns">
+    <div class="field">
+      <label for="report-from">From</label>
+      <input id="report-from" type="date" formControlName="from" />
+    </div>
+
+    <div class="field">
+      <label for="report-to">To</label>
+      <input
+        id="report-to"
+        type="date"
+        formControlName="to"
+        [attr.min]="form.controls.from.value || null"
+        [class.invalid]="form.hasError('dateRange')"
+        [attr.aria-describedby]="form.hasError('dateRange') ? 'date-error' : null"
+      />
+    </div>
+  </div>
+  <p class="hint">Leave a date empty to include everything: from the very beginning, up to today.</p>
+  @if (form.hasError('dateRange')) {
+    <p id="date-error" class="field-error" role="alert">The "to" date must not be before the "from" date.</p>
+  }
+
+  <div class="field">
+    <label for="report-booking-status">Booking status</label>
+    <select id="report-booking-status" formControlName="bookingStatus">
+      @for (choice of bookingStatusChoices; track choice.value) {
+        <option [value]="choice.value">{{ choice.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="report-payment-status">Payment status</label>
+    <select id="report-payment-status" formControlName="paymentStatus">
+      @for (choice of paymentStatusChoices; track choice.value) {
+        <option [value]="choice.value">{{ choice.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="report-group-by">Group bookings and payments</label>
+    <select id="report-group-by" formControlName="groupBy">
+      @for (choice of groupByChoices; track choice.value) {
+        <option [value]="choice.value">{{ choice.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="report-sort">Order of the groups</label>
+    <select id="report-sort" formControlName="sort">
+      @for (choice of sortChoices; track choice.value) {
+        <option [value]="choice.value">{{ choice.label }}</option>
+      }
+    </select>
+  </div>
+
+  <fieldset class="sections" formGroupName="sections">
+    <legend>Parts of the report</legend>
+    @for (choice of sectionChoices; track choice.value) {
+      <label class="check">
+        <input type="checkbox" [formControlName]="choice.value" />
+        {{ choice.label }}
+      </label>
+    }
+    @if (form.controls.sections.touched && form.controls.sections.hasError('noSection')) {
+      <p class="field-error" role="alert">Tick at least one part.</p>
+    }
+  </fieldset>
+
+  <button class="primary" type="submit" [disabled]="loading()">
+    {{ loading() ? 'Generating...' : 'Generate report' }}
+  </button>
+</form>
+
+<!-- ---------- The report ---------- -->
+<section class="viewer" aria-labelledby="viewer-title" [attr.aria-busy]="loading()">
+  <div class="viewer-head">
+    <h2 id="viewer-title">Report</h2>
+    @if (reportHtml()) {
+      <!-- Prints only the report. In the print window choose "Save as PDF" to get a PDF file. -->
+      <button class="secondary" type="button" (click)="print()">Print or save as PDF</button>
+    }
+  </div>
+
+  @if (errorText()) {
+    <app-error-message [message]="errorText()" (retry)="generate()" />
+  } @else if (loading()) {
+    <span class="visually-hidden">Building your report...</span>
+    <div class="table-card">
+      @for (row of [1, 2, 3, 4, 5]; track row) {
+        <app-skeleton kind="row" [columns]="3" />
+      }
+    </div>
+  } @else if (reportHtml()) {
+    <!--
+      sandbox="" is the strictest setting: no scripts, no forms, no pop-ups, and the page inside is treated as a
+      stranger. NEVER add allow-scripts or allow-same-origin here. The box has a fixed height and scrolls inside.
+    -->
+    <iframe class="report-frame" sandbox="" title="Report" [srcdoc]="trustedReport()"></iframe>
+  } @else {
+    <app-empty-state
+      icon="search"
+      heading="No report yet"
+      text="Choose your options on the left and press Generate report."
+    />
+  }
+</section>

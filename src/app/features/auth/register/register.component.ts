@@ -6,7 +6,6 @@ import {
   FormControl,
   FormGroup,
   ReactiveFormsModule,
-  ValidationErrors,
   ValidatorFn,
   Validators,
 } from '@angular/forms';
@@ -18,11 +17,10 @@ import {
   kenyanPhoneValidator,
   normalizeKenyanPhone,
 } from '../../../core/validators/kenyan-phone.validator';
+import { STUDENT_EMAIL_ENDING, studentEmailValidator } from '../../../core/validators/student-email.validator';
 import { AuthService } from '../auth.service';
 
 type AccountType = 'student' | 'landlord';
-
-const STUDENT_EMAIL_ENDING = '@students.kcau.ac.ke';
 
 // Letters (also accented ones), spaces, hyphens and apostrophes. The profile page allows the same.
 const NAME_PATTERN = /^[\p{L} '-]+$/u;
@@ -161,13 +159,4 @@ export class RegisterComponent {
   private onlyFor(tab: AccountType, rule: ValidatorFn): ValidatorFn {
     return (control: AbstractControl) => (this.tab() === tab ? rule(control) : null);
   }
-}
-
-/** Student emails must end with @students.kcau.ac.ke (the backend checks this too). */
-function studentEmailValidator(control: AbstractControl): ValidationErrors | null {
-  const email = String(control.value ?? '').trim().toLowerCase();
-  if (email === '' || email.endsWith(STUDENT_EMAIL_ENDING)) {
-    return null;
-  }
-  return { studentEmail: true };
 }

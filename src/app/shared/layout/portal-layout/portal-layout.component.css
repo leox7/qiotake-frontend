@@ -6,7 +6,7 @@
 .portal {
   --side-bg: var(--surface);
   --side-text: var(--dark);
-  --side-muted: var(--muted);
+  --side-muted: var(--muted-strong);
   --side-line: var(--border);
   --side-hover-bg: color-mix(in srgb, var(--primary) 8%, var(--surface));
   --side-active-bg: color-mix(in srgb, var(--primary) 14%, var(--surface));
@@ -83,7 +83,7 @@
   padding: 0 6px;
   border-radius: 11px;
   background: var(--warning);
-  color: #ffffff;
+  color: var(--surface);
   font-size: 12px;
   font-weight: 700;
 }
@@ -138,7 +138,7 @@
 
 .logout {
   grid-column: 1 / -1;
-  min-height: 40px;
+  min-height: 44px;
   margin-top: 8px;
   border: 1px solid var(--side-line);
   border-radius: var(--radius-sm);

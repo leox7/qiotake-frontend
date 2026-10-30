@@ -1,0 +1,58 @@
+<div class="table-toolbar">
+  <div class="field">
+    <label for="booking-status">Status</label>
+    <select id="booking-status" (change)="onStatusChange($event)">
+      @for (option of statusOptions; track option.value) {
+        <option [value]="option.value" [selected]="option.value === statusFilter()">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+</div>
+
+@if (error()) {
+  <app-error-message [message]="error()" (retry)="load()" />
+} @else if (loading() && !result()) {
+  <span class="visually-hidden">Loading the bookings...</span>
+  <div class="table-card">
+    @for (row of skeletonRows; track row) {
+      <app-skeleton kind="row" [columns]="5" />
+    }
+  </div>
+} @else if (result(); as data) {
+  @if (data.totalElements === 0) {
+    @if (statusFilter() === '') {
+      <app-empty-state icon="calendar" heading="No bookings yet" text="When a student asks for a home, the request shows here." />
+    } @else {
+      <app-empty-state icon="search" heading="No bookings with this status" text="Try another status." />
+    }
+  } @else {
+    <!-- While the next page loads, the old rows stay on screen, dimmed -->
+    <div class="table-card" [class.loading]="loading()" [attr.aria-busy]="loading()">
+      <table class="portal-table wide">
+        <thead>
+          <tr>
+            <th scope="col">Student</th>
+            <th scope="col">Listing</th>
+            <th scope="col">Dates</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (booking of data.content; track booking.id) {
+            <tr>
+              <td data-label="Student">
+                <span class="cell-strong">{{ studentName(booking) }}</span>
+                <span class="email">{{ booking.studentEmail }}</span>
+              </td>
+              <td data-label="Listing">{{ booking.listingTitle }}</td>
+              <td data-label="Dates" class="nowrap">{{ datesText(booking) }}</td>
+              <td data-label="Status"><app-status-badge [status]="booking.status" /></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [page]="data.page" [totalPages]="data.totalPages" (pageChange)="goToPage($event)" />
+  }
+}

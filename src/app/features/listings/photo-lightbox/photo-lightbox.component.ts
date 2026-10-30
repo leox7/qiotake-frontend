@@ -1,4 +1,5 @@
 import { Component, ElementRef, afterNextRender, input, linkedSignal, output, viewChild } from '@angular/core';
+import { trapFocus } from '../../../core/utils/trap-focus';
 
 /** How far (in pixels) a finger must slide sideways before we count it as a swipe. */
 const SWIPE_DISTANCE = 50;
@@ -72,19 +73,6 @@ export class PhotoLightboxComponent {
 
   /** Keep the Tab key inside the viewer, so keyboard users cannot get "lost" behind it. */
   keepFocusInside(event: KeyboardEvent, dialog: HTMLElement): void {
-    if (event.key !== 'Tab') {
-      return;
-    }
-    const buttons = Array.from(dialog.querySelectorAll('button'));
-    const first = buttons[0];
-    const last = buttons[buttons.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
+    trapFocus(event, dialog);
   }
 }

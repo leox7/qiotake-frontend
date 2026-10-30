@@ -8,7 +8,7 @@ export interface StatusInfo {
 
 /**
  * One line for every status the backend can send, from its three enums:
- * ListingStatus, BookingStatus and PaymentStatus.
+ * ListingStatus, BookingStatus and PaymentStatus, plus the account status ACTIVE / DEACTIVATED.
  * "PENDING" exists in both BookingStatus and PaymentStatus and means the same thing in both
  * (waiting), so one line covers both.
  */
@@ -22,6 +22,10 @@ const STATUS_INFO: Record<string, StatusInfo> = {
   CONFIRMED: { tone: 'success', label: 'Confirmed' },
   CANCELLED: { tone: 'neutral', label: 'Cancelled' },
   VACATED: { tone: 'neutral', label: 'Vacated' },
+
+  // Account status (UserResponseDto.enabled): the admin Users page
+  ACTIVE: { tone: 'success', label: 'Active' },
+  DEACTIVATED: { tone: 'error', label: 'Deactivated' },
 
   // PaymentStatus
   PAID: { tone: 'success', label: 'Paid' },

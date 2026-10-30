@@ -1,0 +1,77 @@
+<!-- ---------- Number cards ---------- -->
+@if (statsError()) {
+  <app-error-message [message]="statsError()" (retry)="loadStats()" />
+} @else if (statsLoading()) {
+  <span class="visually-hidden">Loading the numbers...</span>
+  <div class="stats">
+    <app-skeleton kind="stat" />
+    <app-skeleton kind="stat" />
+    <app-skeleton kind="stat" />
+  </div>
+} @else if (stats(); as s) {
+  <div class="stats">
+    <section class="stat">
+      <h2>Total users</h2>
+      <p class="value">{{ s.totalUsers | number }}</p>
+    </section>
+
+    <section class="stat">
+      <h2>New listings this month</h2>
+      <p class="value">{{ s.newListingsThisMonth | number }}</p>
+    </section>
+
+    <section class="stat">
+      <h2>Payments received this month</h2>
+      <p class="value">{{ s.paymentsReceivedThisMonth | money }}</p>
+      @if (paymentsChange(); as change) {
+        <p class="hint" [class.good]="change.tone === 'good'" [class.bad]="change.tone === 'bad'">
+          {{ change.text }}
+        </p>
+      }
+    </section>
+  </div>
+}
+
+<!-- ---------- Recent activity: the newest bookings ---------- -->
+<section class="recent" aria-labelledby="recent-title">
+  <div class="recent-head">
+    <h2 id="recent-title">Recent activity: newest bookings</h2>
+    <a routerLink="/admin/bookings">See all bookings</a>
+  </div>
+
+  @if (bookingsError()) {
+    <app-error-message [message]="bookingsError()" (retry)="loadBookings()" />
+  } @else if (bookingsLoading()) {
+    <span class="visually-hidden">Loading the newest bookings...</span>
+    <div class="table-card">
+      @for (row of skeletonRows; track row) {
+        <app-skeleton kind="row" [columns]="4" />
+      }
+    </div>
+  } @else if (bookings().length === 0) {
+    <app-empty-state icon="calendar" heading="No bookings yet" text="When a student asks for a home, the request shows here." />
+  } @else {
+    <div class="table-card">
+      <table class="portal-table">
+        <thead>
+          <tr>
+            <th scope="col">Student</th>
+            <th scope="col">Listing</th>
+            <th scope="col">Dates</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (booking of bookings(); track booking.id) {
+            <tr>
+              <td data-label="Student" class="cell-strong">{{ studentName(booking) }}</td>
+              <td data-label="Listing">{{ booking.listingTitle }}</td>
+              <td data-label="Dates" class="nowrap">{{ datesText(booking) }}</td>
+              <td data-label="Status"><app-status-badge [status]="booking.status" /></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

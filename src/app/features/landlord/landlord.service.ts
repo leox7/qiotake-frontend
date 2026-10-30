@@ -3,7 +3,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PagedResponse } from '../../core/models/paged-response.model';
-import { Payment } from '../../core/models/payment.model';
+import { PaymentWithStudent } from '../../core/models/payment.model';
 import { Profile } from '../../core/models/profile.model';
 import { LandlordNotification, LandlordStats } from './landlord.models';
 
@@ -47,12 +47,12 @@ export class LandlordService {
   }
 
   /**
-   * One page of the payments made on this landlord's listings, newest first. `page` starts at 0,
-   * the backend allows 50 per page. The backend has no filter on this call (see MISSING BACKEND).
+   * One page of the payments made on this landlord's listings, newest first, each with the student's name.
+   * `page` starts at 0, the backend allows 50 per page. The backend has no status filter on this call (see MISSING-BACKEND.md).
    */
-  getReceivedPayments(page: number, size: number): Observable<PagedResponse<Payment>> {
+  getReceivedPayments(page: number, size: number): Observable<PagedResponse<PaymentWithStudent>> {
     const params = new HttpParams().set('page', page).set('size', size);
-    return this.http.get<PagedResponse<Payment>>(`${this.apiUrl}/payments/received`, { params });
+    return this.http.get<PagedResponse<PaymentWithStudent>>(`${this.apiUrl}/payments/received`, { params });
   }
 
   /** One page of this landlord's notifications, newest first. `page` starts at 0. */

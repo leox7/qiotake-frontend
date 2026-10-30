@@ -13,7 +13,9 @@
       <app-listing-filters idPrefix="side" [filters]="filters()" (changed)="applyFilters($event)" />
     </aside>
 
-    <section class="results" #resultsTop aria-label="Results">
+    <section class="results" #resultsTop aria-labelledby="results-heading">
+      <!-- Keeps the page outline in order: h1, then this h2, then one h3 per home card -->
+      <h2 id="results-heading" class="visually-hidden">Results</h2>
       <div class="result-bar">
         <!-- aria-live makes screen readers say the new total after every search -->
         <p class="count" aria-live="polite">
@@ -114,7 +116,14 @@
 <!-- The phone drawer. It slides up from the bottom and works on a copy (draft) of the filters until "Apply" -->
 @if (drawerOpen()) {
   <div class="backdrop" (click)="closeDrawer()"></div>
-  <div class="drawer" role="dialog" aria-modal="true" aria-label="Filters">
+  <div
+    #drawer
+    class="drawer"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Filters"
+    (keydown)="keepFocusInside($event, drawer)"
+  >
     <div class="drawer-top">
       <button #drawerClose class="close" type="button" (click)="closeDrawer()">
         <span class="visually-hidden">Close filters</span>

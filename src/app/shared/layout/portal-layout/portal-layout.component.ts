@@ -8,7 +8,16 @@ import { getRoleLabel } from '../../../core/utils/role-label';
 import { LogoComponent } from '../../components/logo/logo.component';
 
 /** The pictures a menu item can show. Add a new name here AND a new @case in the html when you need one. */
-export type PortalIcon = 'dashboard' | 'listings' | 'bookings' | 'payments' | 'notifications' | 'reports' | 'profile';
+export type PortalIcon =
+  | 'dashboard'
+  | 'listings'
+  | 'bookings'
+  | 'payments'
+  | 'notifications'
+  | 'reports'
+  | 'profile'
+  | 'users'
+  | 'audit';
 
 /** One line of the sidebar menu. */
 export interface PortalMenuItem {

@@ -71,8 +71,9 @@ app-search-bar {
 /* ---- the picture ---- */
 
 /*
- * The photo is a CSS background, with a soft gradient underneath it. If public/images/hero.jpg
- * does not exist the browser skips the photo, and the gradient is what you see.
+ * A soft gradient. To use a photo, put it in public/images/hero.jpg and add
+ *   url('/images/hero.jpg') center / cover no-repeat,
+ * in front of the gradient. It is not there now because a missing file shows as a 404 error in the console.
  */
 .visual {
   position: relative;
@@ -80,9 +81,7 @@ app-search-bar {
   max-height: 560px;
   width: 100%;
   border-radius: calc(var(--radius-lg) * 2);
-  background:
-    url('/images/hero.jpg') center / cover no-repeat,
-    linear-gradient(160deg, color-mix(in srgb, var(--focus) 70%, var(--surface)), var(--primary));
+  background: linear-gradient(160deg, color-mix(in srgb, var(--focus) 70%, var(--surface)), var(--primary));
 }
 
 .float-card {

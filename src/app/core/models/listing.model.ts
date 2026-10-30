@@ -56,6 +56,10 @@ export interface Listing {
   contactInfo: string;
   status: ListingStatus;
   landlordFirstName: string | null;
+  /** True once the landlord has posted a first listing. */
+  landlordVerified: boolean;
+  /** "yyyy-MM-dd": the last day of the confirmed stay that covers today. null when nobody lives there today. */
+  occupiedUntil: string | null;
   /** A path such as /uploads/listings/abc.jpg, or null when the listing has no photo yet. */
   primaryImageUrl: string | null;
   secondaryImageUrls: string[];

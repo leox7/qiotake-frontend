@@ -18,7 +18,7 @@ h2 {
 }
 
 .muted {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 14px;
 }
 
@@ -27,7 +27,7 @@ h2 {
 }
 
 .price {
-  color: var(--muted);
+  color: var(--muted-strong);
 }
 
 .price strong {

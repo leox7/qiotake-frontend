@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="QiotaKE">
+  <!-- The logo mark: a rounded square in the primary colour (#3b707d) with a white Q -->
+  <rect width="64" height="64" rx="14" fill="#3b707d"/>
+  <text x="32" y="45" text-anchor="middle" font-family="'DM Sans', Arial, Helvetica, sans-serif" font-size="40" font-weight="700" fill="#ffffff">Q</text>
+</svg>

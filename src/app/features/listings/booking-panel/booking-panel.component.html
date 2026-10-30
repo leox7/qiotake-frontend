@@ -15,13 +15,17 @@
     <h2 id="booking-panel-title">Request this home</h2>
     <p class="muted">No payment needed today.</p>
 
-    <p class="price"><strong>KES {{ listing().price | number: '1.0-2' }}</strong> per month</p>
+    <p class="price"><strong>{{ listing().price | money }}</strong> per month</p>
 
     @if (listing().status === 'OCCUPIED') {
       <!-- The backend only blocks dates that overlap a confirmed stay, so later dates can still be asked for -->
       <p class="note">
-        Someone lives here right now. You can still request dates after their stay ends. If your dates
-        overlap it, we will tell you.
+        @if (occupiedUntilText()) {
+          Taken until {{ occupiedUntilText() }}, you can request dates after that.
+        } @else {
+          Someone lives here right now. You can still request dates after their stay ends. If your dates
+          overlap it, we will tell you.
+        }
       </p>
     }
 
@@ -37,7 +41,7 @@
             [attr.aria-invalid]="form.controls.moveIn.touched && form.controls.moveIn.invalid"
             aria-describedby="move-in-error"
           />
-          <p id="move-in-error" class="field-error">
+          <p id="move-in-error" class="field-error" role="alert">
             @if (showError('moveIn', 'required')) {
               Choose your move-in date.
             } @else if (showError('moveIn', 'past')) {
@@ -56,7 +60,7 @@
             [attr.aria-invalid]="showError('moveOut', 'required') || showOrderError()"
             aria-describedby="move-out-error"
           />
-          <p id="move-out-error" class="field-error">
+          <p id="move-out-error" class="field-error" role="alert">
             @if (showError('moveOut', 'required')) {
               Choose your move-out date.
             } @else if (showOrderError()) {

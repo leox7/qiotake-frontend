@@ -57,7 +57,7 @@ npm-debug.log*
 
 # Markdown notes (CLAUDE.md, README.md, 00-roadmap.md and any other .md file)
 *.md
-
+!README.md
 # System files
 .DS_Store
 Thumbs.db

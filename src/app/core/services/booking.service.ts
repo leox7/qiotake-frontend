@@ -1,8 +1,8 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { Booking, BookingRequest } from '../models/booking.model';
+import { Booking, BookingCounts, BookingRequest, BookingTab } from '../models/booking.model';
 import { PagedResponse } from '../models/paged-response.model';
 /**
  * Calls to /api/bookings. It lives in core (not in features/bookings) because two features use it:
@@ -26,13 +26,28 @@ export class BookingService {
   }
 
   /**
-   * One page of the logged-in student's bookings, newest first. `page` starts at 0.
-   * The backend has no status filter and no counts, so the page filters and counts by itself.
-   * The backend allows at most 50 per page.
+   * One page of the logged-in student's bookings, newest first. `page` starts at 0, the backend allows at most 50 per page.
+   * `status` is a booking status or 'PAST' (cancelled and vacated together). Leave it out for every booking.
    */
-  getMyBookings(page: number, size: number): Observable<PagedResponse<Booking>> {
-    const params = new HttpParams().set('page', page).set('size', size);
+  getMyBookings(page: number, size: number, status?: BookingTab): Observable<PagedResponse<Booking>> {
+    let params = new HttpParams().set('page', page).set('size', size);
+    if (status) {
+      params = params.set('status', status);
+    }
     return this.http.get<PagedResponse<Booking>>(`${this.baseUrl}/my`, { params });
+  }
+
+  /** The numbers for the tabs of My bookings: all, pending, confirmed and past. */
+  getMyBookingCounts(): Observable<BookingCounts> {
+    return this.http.get<BookingCounts>(`${this.baseUrl}/my/counts`);
+  }
+
+  /**
+   * One booking by its id. A student only gets their own (404 for anyone else's), a landlord only the ones on
+   * their listings. The payment page uses it to know what is due.
+   */
+  getBooking(id: number): Observable<Booking> {
+    return this.http.get<Booking>(`${this.baseUrl}/${id}`);
   }
 
   /**
@@ -45,7 +60,7 @@ export class BookingService {
 
   /**
    * One page of the booking requests on the logged-in landlord's listings, newest first. `page` starts at 0,
-   * the backend allows 50 per page. The backend has no status filter and no counts (see MISSING BACKEND),
+   * the backend allows 50 per page. The backend has no status filter and no counts for landlords (see MISSING-BACKEND.md),
    * so the Booking requests page loads the list and filters and counts by itself.
    */
   getLandlordBookings(page: number, size: number): Observable<PagedResponse<Booking>> {
@@ -60,24 +75,5 @@ export class BookingService {
    */
   confirmBooking(id: number): Observable<Booking> {
     return this.http.put<Booking>(`${this.baseUrl}/${id}/confirm`, {});
-  }
-
-  /**
-   * One of the student's own bookings, or null if there is none with this id.
-   * The backend has no "get one booking" call, so we look through the student's list (50 at a time).
-   * Someone else's booking is never in this list, which is also why it comes back as null.
-   */
-  async findMyBooking(id: number): Promise<Booking | null> {
-    for (let page = 0; ; page++) {
-      const result = await firstValueFrom(this.getMyBookings(page, 50));
-      const found = result.content.find((booking) => booking.id === id);
-      if (found) {
-        return found;
-      }
-      // `content.length === 0` is a safety stop so a strange answer can never loop forever
-      if (result.last || result.content.length === 0) {
-        return null;
-      }
-    }
   }
 }

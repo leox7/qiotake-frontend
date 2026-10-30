@@ -1,0 +1,63 @@
+/* Above the page and the toasts (which use 100), the same as the confirm dialog */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  background: color-mix(in srgb, var(--dark) 55%, transparent);
+}
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 111;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(420px, calc(100vw - 32px));
+  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 48px color-mix(in srgb, var(--dark) 30%, transparent);
+}
+
+h2 {
+  font-size: 20px;
+  color: var(--dark);
+}
+
+.id {
+  padding: 16px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--dark);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-align: center;
+  /* A long value must never push the box wider than the screen */
+  overflow-wrap: anywhere;
+}
+
+.countdown {
+  color: var(--text);
+}
+
+.audit {
+  color: var(--muted-strong);
+  font-size: 14px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+@media (max-width: 480px) {
+  .buttons .primary {
+    width: 100%;
+  }
+}

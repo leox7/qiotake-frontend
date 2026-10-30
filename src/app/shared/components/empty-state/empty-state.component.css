@@ -23,6 +23,7 @@
   color: var(--primary);
 }
 
+h1,
 h2 {
   color: var(--dark);
   font-size: 20px;
@@ -30,7 +31,7 @@ h2 {
 
 p {
   max-width: 420px;
-  color: var(--muted);
+  color: var(--muted-strong);
 }
 
 .primary {

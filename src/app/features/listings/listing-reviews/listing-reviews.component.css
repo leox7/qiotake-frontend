@@ -14,7 +14,7 @@ h2 {
 }
 
 .muted {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 14px;
 }
 

@@ -1,0 +1,44 @@
+# nginx settings for the QiotaKE frontend. ${BACKEND_URL} is filled in when the container starts.
+server {
+    listen 80;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # The backend allows photos up to 2MB. nginx's own limit is 1MB, so it must be raised or uploads fail here.
+    client_max_body_size 5m;
+
+    # API calls go to the backend. The website and the API share one address, so the browser needs no CORS.
+    # Host must be $http_host (with the port), NOT $host: the backend compares it with the browser's Origin
+    # (for example http://localhost:8081), and without the port every POST is refused with 403.
+    location /api/ {
+        proxy_pass ${BACKEND_URL};
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Listing photos are files the backend serves (for example /uploads/listings/abc.jpg)
+    location /uploads/ {
+        proxy_pass ${BACKEND_URL};
+        proxy_set_header Host $http_host;
+    }
+
+    # The built files have a hash in their name, so they can be cached for a long time
+    location ~* \.(js|css)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # index.html names the hashed files, so it must always be fetched fresh
+    location = /index.html {
+        add_header Cache-Control "no-cache";
+    }
+
+    # Every other address (for example /listings/3 after a page refresh) is an Angular route:
+    # send index.html and let Angular show the right page. The Angular "not found" page handles bad addresses.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

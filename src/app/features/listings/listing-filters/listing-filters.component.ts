@@ -8,6 +8,7 @@ import {
   ROOM_TYPE_OPTIONS,
   RoomType,
 } from '../../../core/models/listing.model';
+import { formatMoney } from '../../../core/utils/format-money';
 
 // The slider goes from 5,000 to 35,000. The very end (35,000) means "no price limit".
 export const BUDGET_MIN = 5000;
@@ -73,7 +74,7 @@ export class ListingFiltersComponent {
   /** Text above the slider, for example "Up to KES 15,000". */
   budgetLabel(): string {
     const value = this.sliderValue();
-    return value >= BUDGET_MAX ? 'Any price' : `Up to KES ${value.toLocaleString('en-KE')}`;
+    return value >= BUDGET_MAX ? 'Any price' : `Up to ${formatMoney(value)}`;
   }
 
   /** While dragging we only move the label. The backend is asked when the visitor lets go. */

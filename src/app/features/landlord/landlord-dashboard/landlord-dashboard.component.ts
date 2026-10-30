@@ -1,4 +1,3 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Booking } from '../../../core/models/booking.model';
@@ -11,6 +10,7 @@ import { SkeletonComponent } from '../../../shared/components/skeleton/skeleton.
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { LandlordStats } from '../landlord.models';
 import { LandlordService } from '../landlord.service';
+import { MoneyPipe } from '../../../core/pipes/money.pipe';
 
 /** How many booking requests the dashboard table shows. The full list comes in the Booking requests page. */
 const RECENT_REQUESTS = 5;
@@ -23,14 +23,7 @@ const RECENT_REQUESTS = 5;
  */
 @Component({
   selector: 'app-landlord-dashboard',
-  imports: [
-    DecimalPipe,
-    RouterLink,
-    EmptyStateComponent,
-    ErrorMessageComponent,
-    SkeletonComponent,
-    StatusBadgeComponent,
-  ],
+  imports: [RouterLink, EmptyStateComponent, ErrorMessageComponent, SkeletonComponent, StatusBadgeComponent, MoneyPipe],
   templateUrl: './landlord-dashboard.component.html',
   styleUrl: './landlord-dashboard.component.css',
 })
@@ -52,9 +45,8 @@ export class LandlordDashboardComponent {
   readonly skeletonRows = [1, 2, 3];
 
   /**
-   * True when the landlord has not posted a listing yet.
-   * The backend has a `verified` flag for this, but it never turns true (see MISSING BACKEND),
-   * so we use the listing count instead. It is also what "verified" is meant to say.
+   * True when the landlord has not posted a listing yet (that is also what makes a landlord "verified").
+   * The stats already hold the listing count, so no extra call for the profile is needed.
    */
   readonly hasNoListings = computed(() => {
     const stats = this.stats();

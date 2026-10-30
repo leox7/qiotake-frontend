@@ -1,0 +1,35 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* The person's email, with their role under it */
+.actor {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.actor-role {
+  display: block;
+  color: var(--muted-strong);
+  font-size: 13px;
+}
+
+/* The details can be a long sentence: let it wrap inside its column instead of stretching the table */
+.details {
+  min-width: 220px;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 799px) {
+  .details {
+    min-width: 0;
+    text-align: right;
+  }
+
+  .actor,
+  .actor-role {
+    text-align: right;
+  }
+}

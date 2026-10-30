@@ -1,0 +1,120 @@
+<div class="toolbar-row">
+  <div class="table-toolbar">
+    <div class="field search-field">
+      <label for="user-search">Search by name or email</label>
+      <!-- No [value] binding: the box keeps what is typed, the search only runs 400 ms after the last key -->
+      <input id="user-search" type="search" autocomplete="off" (input)="onSearch($event)" />
+    </div>
+
+    <div class="field">
+      <label for="role-filter">Role</label>
+      <select id="role-filter" (change)="onRoleChange($event)">
+        @for (option of roleOptions; track option.value) {
+          <option [value]="option.value" [selected]="option.value === roleFilter()">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <button class="primary" type="button" (click)="openCreateDialog($event)">Create admin</button>
+</div>
+
+@if (error()) {
+  <app-error-message [message]="error()" (retry)="load()" />
+} @else if (loading() && !result()) {
+  <span class="visually-hidden">Loading the users...</span>
+  <div class="table-card">
+    @for (row of skeletonRows; track row) {
+      <app-skeleton kind="row" [columns]="7" />
+    }
+  </div>
+} @else if (result(); as data) {
+  @if (data.totalElements === 0) {
+    @if (search() === '' && roleFilter() === '') {
+      <app-empty-state icon="home" heading="No users yet" text="Accounts show here after people register." />
+    } @else {
+      <app-empty-state icon="search" heading="No users match" text="Try other words or choose another role." />
+    }
+  } @else {
+    <p class="count" aria-live="polite">{{ data.totalElements }} {{ data.totalElements === 1 ? 'user' : 'users' }}</p>
+
+    <!-- While the next page loads, the old rows stay on screen, dimmed -->
+    <div class="table-card" [class.loading]="loading()" [attr.aria-busy]="loading()">
+      <table class="portal-table wide">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Role</th>
+            <th scope="col">Status</th>
+            <th scope="col">Verified</th>
+            <th scope="col">Created</th>
+            <th scope="col">National ID</th>
+            <th scope="col"><span class="visually-hidden">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of data.content; track user.id) {
+            <tr>
+              <td data-label="Name" class="cell-strong">{{ fullName(user) }}</td>
+              <td data-label="Email" class="email">{{ user.email }}</td>
+              <td data-label="Role">
+                <span class="role" [class.landlord]="user.role === 'LANDLORD'" [class.admin]="user.role === 'ADMIN'">
+                  {{ roleLabel(user) }}
+                </span>
+              </td>
+              <td data-label="Status"><app-status-badge [status]="accountStatus(user)" /></td>
+              <!-- Only landlords have a verified flag (they are verified after their first listing) -->
+              <td data-label="Verified">
+                @if (user.role === 'LANDLORD') {
+                  @if (user.verified) {
+                    <span class="verified" aria-label="Verified">&#10003; Verified</span>
+                  } @else {
+                    <span class="not-yet">Not yet</span>
+                  }
+                }
+              </td>
+              <td data-label="Created" class="nowrap">{{ createdText(user) }}</td>
+              <!-- The backend only sends an ID for landlords, and it is always masked here -->
+              <td data-label="National ID" class="nowrap">{{ user.role === 'LANDLORD' ? (user.nationalIdNumber ?? '-') : '-' }}</td>
+              <td class="actions-cell">
+                @if (user.role === 'LANDLORD') {
+                  <button
+                    class="text-button"
+                    type="button"
+                    [disabled]="idBusy() || shownId() !== null"
+                    (click)="openIdBox(user, $event)"
+                  >
+                    View ID<span class="visually-hidden"> of {{ fullName(user) }}</span>
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [page]="data.page" [totalPages]="data.totalPages" (pageChange)="goToPage($event)" />
+  }
+}
+
+@if (idTarget(); as user) {
+  <app-confirm-dialog
+    heading="Show the full national ID?"
+    [message]="idBoxMessage(user)"
+    confirmLabel="Yes, show it"
+    cancelLabel="Cancel"
+    [busy]="idBusy()"
+    (confirmed)="showId()"
+    (dismissed)="closeBoxes()"
+  />
+}
+
+@if (shownId(); as shown) {
+  <app-national-id-modal [name]="shown.name" [nationalId]="shown.nationalId" (closed)="hideId()" />
+}
+
+@if (creating()) {
+  <app-create-admin-dialog (created)="onAdminCreated($event)" (dismissed)="closeBoxes()" />
+}

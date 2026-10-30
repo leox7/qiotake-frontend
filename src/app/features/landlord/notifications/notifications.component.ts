@@ -1,7 +1,7 @@
-import { DatePipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { ToastService } from '../../../core/services/toast.service';
 import { getApiErrorMessage, shouldToastHere } from '../../../core/utils/api-error';
+import { formatDateTime } from '../../../core/utils/format-date';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { ErrorMessageComponent } from '../../../shared/components/error-message/error-message.component';
 import { SkeletonComponent } from '../../../shared/components/skeleton/skeleton.component';
@@ -13,7 +13,7 @@ const PAGE_SIZE = 10;
 /** The landlord's notifications, newest first, with a button to mark each one as read. */
 @Component({
   selector: 'app-notifications',
-  imports: [DatePipe, EmptyStateComponent, ErrorMessageComponent, SkeletonComponent],
+  imports: [EmptyStateComponent, ErrorMessageComponent, SkeletonComponent],
   templateUrl: './notifications.component.html',
   styleUrl: './notifications.component.css',
 })
@@ -36,6 +36,11 @@ export class NotificationsComponent {
 
   constructor() {
     this.load();
+  }
+
+  /** "28 Oct 2026, 14:03" */
+  dateText(notification: LandlordNotification): string {
+    return formatDateTime(notification.dateCreated);
   }
 
   /** Reads the current page. Also used by the Retry button. */

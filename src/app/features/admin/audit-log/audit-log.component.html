@@ -1,0 +1,100 @@
+<div class="table-toolbar">
+  <div class="field">
+    <label for="log-action">Action</label>
+    <select id="log-action" (change)="onFilterChange('action', $event)">
+      <option value="" [selected]="filters().action === ''">All actions</option>
+      @for (action of actions(); track action) {
+        <option [value]="action" [selected]="action === filters().action">{{ actionLabel(action) }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="log-actor">Actor email</label>
+    <!-- No [value] binding: the box keeps what is typed, the search only runs 400 ms after the last key -->
+    <input #actorBox id="log-actor" type="search" autocomplete="off" placeholder="Part of an email" (input)="onActorSearch($event)" />
+  </div>
+
+  <div class="field">
+    <label for="log-from">From</label>
+    <input id="log-from" type="date" [value]="filters().from" (change)="onFilterChange('from', $event)" />
+  </div>
+
+  <div class="field">
+    <label for="log-to">To</label>
+    <input
+      id="log-to"
+      type="date"
+      [value]="filters().to"
+      [attr.aria-invalid]="dateError() ? 'true' : null"
+      (change)="onFilterChange('to', $event)"
+    />
+  </div>
+
+  @if (hasFilters()) {
+    <button class="secondary" type="button" (click)="clearFilters(actorBox)">Clear filters</button>
+  }
+</div>
+
+@if (dateError()) {
+  <p class="notice error" role="alert">{{ dateError() }}</p>
+}
+
+@if (error()) {
+  <app-error-message [message]="error()" (retry)="load()" />
+} @else if (loading() && !result()) {
+  <span class="visually-hidden">Loading the audit log...</span>
+  <div class="table-card">
+    @for (row of skeletonRows; track row) {
+      <app-skeleton kind="row" [columns]="5" />
+    }
+  </div>
+} @else if (result(); as data) {
+  @if (data.totalElements === 0) {
+    @if (hasFilters()) {
+      <app-empty-state
+        icon="search"
+        heading="Nothing matches these filters"
+        text="Try another action, other words or a wider date range."
+        buttonLabel="Clear filters"
+        (buttonClick)="clearFilters(actorBox)"
+      />
+    } @else {
+      <app-empty-state icon="search" heading="The audit log is empty" text="Actions are recorded here as people use QiotaKE." />
+    }
+  } @else {
+    <!-- While the next page loads, the old rows stay on screen, dimmed -->
+    <div class="table-card" [class.loading]="loading()" [attr.aria-busy]="loading()">
+      <table class="portal-table wide">
+        <thead>
+          <tr>
+            <th scope="col">Date and time</th>
+            <th scope="col">Actor</th>
+            <th scope="col">Action</th>
+            <th scope="col">Target</th>
+            <th scope="col">Details</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of data.content; track log.id) {
+            <tr>
+              <td data-label="Date and time" class="nowrap">{{ timeText(log) }}</td>
+              <td data-label="Actor">
+                <span class="actor">{{ log.actorEmail }}</span>
+                @if (log.actorRole) {
+                  <span class="actor-role">{{ log.actorRole }}</span>
+                }
+              </td>
+              <!-- The readable name; the raw name (what the filter uses) shows when the mouse rests on it -->
+              <td data-label="Action" class="cell-strong" [attr.title]="log.action">{{ actionLabel(log.action) }}</td>
+              <td data-label="Target" class="nowrap">{{ targetText(log) }}</td>
+              <td data-label="Details" class="details">{{ detailsText(log) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [page]="data.page" [totalPages]="data.totalPages" (pageChange)="goToPage($event)" />
+  }
+}

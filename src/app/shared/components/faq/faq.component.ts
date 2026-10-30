@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, input, signal } from '@angular/core';
 import { FAQ_ITEMS } from './faq.data';
 
 /**
@@ -13,6 +13,9 @@ import { FAQ_ITEMS } from './faq.data';
 })
 export class FaqComponent {
   readonly items = FAQ_ITEMS;
+
+  /** The heading level of each question, so the page outline has no gaps (h2 -> h3 on the home page, h1 -> h2 on /faq). */
+  readonly headingLevel = input(3);
 
   // The number of the open question. -1 means all are closed.
   readonly openIndex = signal(0);

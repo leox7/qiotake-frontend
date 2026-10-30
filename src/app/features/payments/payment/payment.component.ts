@@ -1,20 +1,18 @@
-import { DecimalPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { Booking } from '../../../core/models/booking.model';
-import { PAYMENT_TYPE_LABELS, Payment, PaymentType } from '../../../core/models/payment.model';
+import { PAYMENT_TYPE_LABELS, Payment, PaymentProvider, PaymentType } from '../../../core/models/payment.model';
 import { BookingService } from '../../../core/services/booking.service';
-import { ListingService } from '../../../core/services/listing.service';
 import { getApiErrorMessage } from '../../../core/utils/api-error';
-import { formatDate } from '../../../core/utils/format-date';
+import { formatDate, formatDateTime } from '../../../core/utils/format-date';
 import { kenyanPhoneValidator, normalizeKenyanPhone } from '../../../core/validators/kenyan-phone.validator';
 import { ErrorMessageComponent } from '../../../shared/components/error-message/error-message.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
-import { getNextRentDue } from '../next-rent-due';
 import { PaymentService } from '../payment.service';
+import { MoneyPipe } from '../../../core/pipes/money.pipe';
 
 /** How long we wait for the student to enter the PIN before we say "we are confirming". */
 const COUNTDOWN_SECONDS = 120;
@@ -44,13 +42,12 @@ type View = 'loading' | 'error' | 'problem' | 'nothing' | 'form' | 'pending' | '
  */
 @Component({
   selector: 'app-payment',
-  imports: [ReactiveFormsModule, RouterLink, DecimalPipe, StatusBadgeComponent, ErrorMessageComponent],
+  imports: [ReactiveFormsModule, RouterLink, StatusBadgeComponent, ErrorMessageComponent, MoneyPipe],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css',
 })
 export class PaymentComponent implements OnDestroy {
   private readonly bookingService = inject(BookingService);
-  private readonly listingService = inject(ListingService);
   private readonly paymentService = inject(PaymentService);
 
   // The booking id from the address. Anything that is not a whole number cannot exist.
@@ -60,9 +57,10 @@ export class PaymentComponent implements OnDestroy {
   readonly problemText = signal('');
   readonly errorText = signal('');
 
+  /** The booking, with what is due next (nextPaymentType, nextPaymentAmount, nextPaymentDueDate). The backend works that out. */
   readonly booking = signal<Booking | null>(null);
-  /** The rent per month in KES, from the listing. The deposit is the same amount. */
-  readonly price = signal(0);
+  /** The payment mode the backend has switched on (null until we know, or if it could not be read). */
+  readonly provider = signal<PaymentProvider | null>(null);
   /** All payments of this booking, newest first. */
   readonly payments = signal<Payment[]>([]);
   /** The payment the pending, success, failed and confirming screens talk about. */
@@ -86,8 +84,11 @@ export class PaymentComponent implements OnDestroy {
 
   readonly typeLabels = PAYMENT_TYPE_LABELS;
 
-  /** The deposit comes first. Once a deposit is PAID, the next payment is rent. */
-  readonly paymentType = computed<PaymentType>(() => (this.hasPaidDeposit() ? 'RENT' : 'DEPOSIT'));
+  /** What the next payment is. The backend says it (deposit first, then rent). */
+  readonly paymentType = computed<PaymentType>(() => (this.booking()?.nextPaymentType === 'RENT' ? 'RENT' : 'DEPOSIT'));
+
+  /** The amount the backend will charge, in KES. */
+  readonly amount = computed(() => this.booking()?.nextPaymentAmount ?? 0);
 
   /** The countdown as m:ss, for example 1:59. */
   readonly countdownText = computed(() => {
@@ -96,8 +97,11 @@ export class PaymentComponent implements OnDestroy {
     return `${minutes}:${seconds}`;
   });
 
-  /** The backend says which provider took the latest payment. SIMULATED means no real money moves. */
-  readonly testMode = computed(() => this.payments()[0]?.provider === 'SIMULATED');
+  /**
+   * SIMULATED means no real money moves. The backend tells us from the start (payments/config). If that call
+   * failed, the provider of the latest payment says the same thing.
+   */
+  readonly testMode = computed(() => (this.provider() ?? this.payments()[0]?.provider) === 'SIMULATED');
 
   private timer?: ReturnType<typeof setInterval>;
 
@@ -121,28 +125,28 @@ export class PaymentComponent implements OnDestroy {
     }
 
     try {
-      // Only the student's OWN bookings are in this list, so someone else's booking is "not found".
-      const booking = await this.bookingService.findMyBooking(this.bookingId);
-      if (!booking) {
-        this.showProblem('We could not find this booking.');
-        return;
-      }
+      // The backend only gives a student their OWN booking, so someone else's booking is a 404 ("not found").
+      const booking = await firstValueFrom(this.bookingService.getBooking(this.bookingId));
       if (booking.status !== 'CONFIRMED') {
         this.showProblem('You can only pay for a booking after the landlord has confirmed it.');
         return;
       }
 
-      // Two independent questions, so we ask them together.
-      const [listing, payments] = await Promise.all([
-        firstValueFrom(this.listingService.getListing(booking.listingId)),
-        this.paymentService.getPaymentsForBooking(this.bookingId),
+      // Independent questions, so we ask them together. The mode is only a label: if it fails we carry on without it.
+      const [payments, config] = await Promise.all([
+        firstValueFrom(this.paymentService.getPaymentsForBooking(this.bookingId)),
+        firstValueFrom(this.paymentService.getPaymentConfig()).catch(() => null),
       ]);
 
       this.booking.set(booking);
-      this.price.set(listing.price);
       this.payments.set(payments);
+      this.provider.set(config?.provider ?? null);
       this.chooseViewFromPayments();
     } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 404) {
+        this.showProblem('We could not find this booking.');
+        return;
+      }
       this.errorText.set(getApiErrorMessage(error));
       this.view.set('error');
     }
@@ -168,20 +172,9 @@ export class PaymentComponent implements OnDestroy {
     }
   }
 
-  // ---------- what the student has already paid ----------
-
-  private hasPaidDeposit(): boolean {
-    return this.payments().some((p) => p.type === 'DEPOSIT' && p.status === 'PAID');
-  }
-
-  /** The deposit is paid and every month of the stay already has its rent. */
+  /** The backend says nothing is due: the deposit is paid and every month of the stay has its rent. */
   private nothingToPay(): boolean {
-    const booking = this.booking();
-    if (!booking || !this.hasPaidDeposit()) {
-      return false;
-    }
-    const paidRents = this.payments().filter((p) => p.type === 'RENT' && p.status === 'PAID').length;
-    return getNextRentDue(booking.startDate, paidRents) > booking.endDate;
+    return this.booking()?.nextPaymentType === 'NONE';
   }
 
   // ---------- starting a payment ----------
@@ -221,7 +214,8 @@ export class PaymentComponent implements OnDestroy {
     // Maybe another tab started it. Read the payments again and show the screen that matches the truth.
     if (error instanceof HttpErrorResponse && error.status === 409) {
       try {
-        this.payments.set(await this.paymentService.getPaymentsForBooking(this.bookingId));
+        this.payments.set(await firstValueFrom(this.paymentService.getPaymentsForBooking(this.bookingId)));
+        this.booking.set(await firstValueFrom(this.bookingService.getBooking(this.bookingId)));
         this.chooseViewFromPayments();
       } catch {
         // could not read them again: the message below is still shown
@@ -253,6 +247,7 @@ export class PaymentComponent implements OnDestroy {
       case 'PAID':
         this.stopCountdown();
         this.view.set('success');
+        this.refreshBooking();
         break;
       case 'FAILED':
         this.stopCountdown();
@@ -267,6 +262,17 @@ export class PaymentComponent implements OnDestroy {
         this.view.set('pending');
         this.startCountdown();
     }
+  }
+
+  /**
+   * A payment just went through, so what is due next has changed (after the deposit comes rent, after the last rent
+   * nothing). Read the booking again to get it from the backend. If this fails the receipt simply has no next date.
+   */
+  private refreshBooking(): void {
+    this.bookingService.getBooking(this.bookingId).subscribe({
+      next: (booking) => this.booking.set(booking),
+      error: () => undefined,
+    });
   }
 
   private startCountdown(): void {
@@ -330,8 +336,14 @@ export class PaymentComponent implements OnDestroy {
 
   // ---------- text for the template ----------
 
-  /** "1 June 2026" from an ISO date-time such as "2026-06-01T10:15:00". */
+  /** "1 Jun 2026, 10:15": when the payment was PAID, or when it was started if it is not paid. */
   dateOf(payment: Payment): string {
-    return formatDate(payment.dateCreated.slice(0, 10));
+    return formatDateTime(payment.paidAt ?? payment.dateCreated);
+  }
+
+  /** "1 June 2026", the day the next payment is due, or '' when nothing is due. */
+  nextDueText(): string {
+    const date = this.booking()?.nextPaymentDueDate;
+    return date ? formatDate(date) : '';
   }
 }

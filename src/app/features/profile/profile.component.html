@@ -27,6 +27,8 @@
         @if (memberSince()) {
           <p class="muted">Member since {{ memberSince() }}</p>
         }
+        <!-- ACTIVE or DEACTIVATED, from the backend (a deactivated account cannot log in, so this normally says Active) -->
+        <p class="muted">Account status: <app-status-badge [status]="p.status" /></p>
       </section>
 
       <div class="cards">
@@ -142,7 +144,7 @@
                   <dd class="value">{{ p.nationalIdNumber }}</dd>
                 </div>
                 <div class="field">
-                  <dt class="label">Account status</dt>
+                  <dt class="label">Verification</dt>
                   <dd class="value">
                     @if (p.verified) {
                       <span class="tag good">Verified</span>
@@ -173,7 +175,7 @@
         <section class="card" aria-labelledby="security-title">
           <h2 id="security-title">Security</h2>
           <div class="security">
-            <p class="muted">Sessions end after 7 days.</p>
+            <p class="muted">{{ sessionEndText() || 'Sessions end after 7 days.' }}</p>
             <button class="secondary logout" type="button" (click)="logout()">Log out of this device</button>
           </div>
         </section>

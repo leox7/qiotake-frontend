@@ -23,7 +23,11 @@
     </svg>
   </div>
 
-  <h2>{{ heading() }}</h2>
+  @if (headingLevel() === 1) {
+    <h1>{{ heading() }}</h1>
+  } @else {
+    <h2>{{ heading() }}</h2>
+  }
   @if (text()) {
     <p>{{ text() }}</p>
   }

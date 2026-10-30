@@ -1,0 +1,44 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.thumb {
+  display: block;
+  width: 72px;
+  height: 54px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+}
+
+.thumb.none {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+/* ---- phones: each listing is a card ---- */
+
+@media (max-width: 799px) {
+  /* The photo sits on top of the card, full width */
+  .photo-cell {
+    padding: 0 !important;
+  }
+
+  .photo-cell .thumb {
+    width: 100%;
+    height: 160px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+
+  .actions-cell .row-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

@@ -1,0 +1,83 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ---- number cards ---- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.stat h2 {
+  color: var(--muted-strong);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.value {
+  color: var(--dark);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.hint {
+  color: var(--muted-strong);
+  font-size: 14px;
+}
+
+.hint.good {
+  color: color-mix(in srgb, var(--success) 85%, var(--text));
+}
+
+.hint.bad {
+  color: var(--error);
+}
+
+/* ---- recent bookings ---- */
+
+.recent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recent-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.recent-head h2 {
+  color: var(--dark);
+  font-size: 18px;
+}
+
+@media (max-width: 899px) {
+  .stats {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* A comfortable tap target for the link next to the heading */
+.recent-head a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}

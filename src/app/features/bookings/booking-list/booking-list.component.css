@@ -92,9 +92,16 @@ h1 {
   align-items: center;
   justify-content: center;
   height: 90px;
+  overflow: hidden;
   border-radius: var(--radius-md);
   background: color-mix(in srgb, var(--primary) 10%, var(--surface));
   color: var(--muted);
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .info {
@@ -125,7 +132,7 @@ h2 a:hover {
 
 .area,
 .note {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 14px;
 }
 
@@ -133,50 +140,33 @@ h2 a:hover {
   margin-top: 4px;
 }
 
+/* While the next tab or page loads, the old cards stay, dimmed */
+.list.loading {
+  opacity: 0.6;
+}
+
 .actions {
   display: flex;
   align-items: center;
 }
 
-/* ---- pagination (same look as the browse page) ---- */
-
-.pagination {
+/* The pay button with a small line under it */
+.pay {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 32px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  text-align: center;
 }
 
-.pagination button {
-  min-width: 44px;
-  min-height: 44px;
-  cursor: pointer;
+.pay-note {
+  color: var(--muted-strong);
+  font-size: 13px;
 }
 
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.page-number {
-  padding: 0 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--dark);
+.paid {
+  color: var(--success);
   font-weight: 700;
-}
-
-.page-number:hover {
-  border-color: var(--primary);
-}
-
-.page-number.current {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: var(--surface);
 }
 
 /* ---- phones: the photo, the text and the button stack, buttons are full width ---- */

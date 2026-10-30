@@ -35,6 +35,9 @@
         </svg>
         <!-- tabindex -1: lets the code move keyboard focus here without adding it to the Tab order -->
         <h3 #successHeading tabindex="-1">Message sent</h3>
+        @if (reference()) {
+          <p class="reference">Your reference: <strong>{{ reference() }}</strong></p>
+        }
         <p>We will reply within 2 working days.</p>
         <button class="secondary" type="button" (click)="sendAnother()">Send another message</button>
       </div>
@@ -53,7 +56,7 @@
             [attr.aria-invalid]="fieldError('fullName') ? true : null"
             aria-describedby="contact-name-error"
           />
-          <p class="field-error" id="contact-name-error">{{ fieldError('fullName') }}</p>
+          <p class="field-error" id="contact-name-error" role="alert">{{ fieldError('fullName') }}</p>
         </div>
 
         <div class="field">
@@ -67,7 +70,7 @@
             [attr.aria-invalid]="fieldError('email') ? true : null"
             aria-describedby="contact-email-error"
           />
-          <p class="field-error" id="contact-email-error">{{ fieldError('email') }}</p>
+          <p class="field-error" id="contact-email-error" role="alert">{{ fieldError('email') }}</p>
         </div>
 
         <div class="field">
@@ -84,7 +87,7 @@
               <option [value]="subject">{{ subject }}</option>
             }
           </select>
-          <p class="field-error" id="contact-subject-error">{{ fieldError('subject') }}</p>
+          <p class="field-error" id="contact-subject-error" role="alert">{{ fieldError('subject') }}</p>
         </div>
 
         <div class="field">
@@ -98,7 +101,7 @@
             aria-describedby="contact-message-error contact-message-count"
           ></textarea>
           <div class="message-footer">
-            <p class="field-error" id="contact-message-error">{{ fieldError('message') }}</p>
+            <p class="field-error" id="contact-message-error" role="alert">{{ fieldError('message') }}</p>
             <p class="count" id="contact-message-count" [class.too-long]="form.controls.message.value.length > maxMessage">
               {{ form.controls.message.value.length }} / {{ maxMessage }}
             </p>

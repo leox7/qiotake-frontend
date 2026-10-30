@@ -41,6 +41,8 @@ export class ContactComponent {
 
   readonly sending = signal(false);
   readonly sent = signal(false);
+  /** The number the backend gives the message, for example "INQ-000123". Shown on the success screen. */
+  readonly reference = signal('');
   // The red message above the button when sending failed. Empty means no problem.
   readonly errorText = signal('');
 
@@ -116,8 +118,9 @@ export class ContactComponent {
         message: value.message.trim(),
       })
       .subscribe({
-        next: () => {
+        next: (inquiry) => {
           this.sending.set(false);
+          this.reference.set(inquiry.reference);
           this.sent.set(true);
           this.focusAfterRender(this.successHeading);
         },
@@ -133,6 +136,7 @@ export class ContactComponent {
     this.form.reset();
     this.prefillFromLogin();
     this.errorText.set('');
+    this.reference.set('');
     this.sent.set(false);
     this.focusAfterRender(this.nameInput);
   }

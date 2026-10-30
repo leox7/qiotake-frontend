@@ -61,7 +61,7 @@ legend {
 
 /* The real radio button is hidden, so the ring is drawn on its star */
 .picker input:focus-visible + label {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--primary);
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
@@ -82,7 +82,7 @@ legend {
 
 .optional {
   font-weight: 400;
-  color: var(--muted);
+  color: var(--muted-strong);
 }
 
 textarea {
@@ -105,7 +105,7 @@ textarea[aria-invalid='true'] {
 
 .count {
   align-self: flex-end;
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 13px;
 }
 

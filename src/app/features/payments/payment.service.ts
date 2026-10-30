@@ -1,12 +1,9 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { PagedResponse } from '../../core/models/paged-response.model';
-import { Payment, PaymentRequest, PaymentType } from '../../core/models/payment.model';
-
-/** The backend allows at most 50 payments per request. */
-const BACKEND_PAGE_SIZE = 50;
+import { Payment, PaymentConfig, PaymentRequest, PaymentType } from '../../core/models/payment.model';
 
 /** All calls to /api/payments that a student needs. The login token is added by jwt.interceptor.ts. */
 @Injectable({ providedIn: 'root' })
@@ -31,24 +28,16 @@ export class PaymentService {
   }
 
   /**
-   * Every payment of one booking, newest first.
-   * The backend has no "payments of a booking" call. It only lists ALL payments of the student
-   * (GET /payments/my), so we read them page by page and keep the ones of this booking.
-   * async / await just means "wait for the answer, then carry on with the next line".
+   * Every payment of ONE of the student's own bookings, newest first (404 for someone else's booking).
+   * One request is enough: a stay has a deposit and one rent per month, far fewer than the 50 the backend allows per page.
    */
-  async getPaymentsForBooking(bookingId: number): Promise<Payment[]> {
-    const found: Payment[] = [];
+  getPaymentsForBooking(bookingId: number): Observable<Payment[]> {
+    const params = new HttpParams().set('bookingId', bookingId).set('size', 50);
+    return this.http.get<PagedResponse<Payment>>(this.baseUrl, { params }).pipe(map((result) => result.content));
+  }
 
-    for (let page = 0; ; page++) {
-      const params = new HttpParams().set('page', page).set('size', BACKEND_PAGE_SIZE);
-      const result = await firstValueFrom(this.http.get<PagedResponse<Payment>>(`${this.baseUrl}/my`, { params }));
-
-      found.push(...result.content.filter((payment) => payment.bookingId === bookingId));
-
-      // `content.length === 0` is a safety stop so a strange answer can never loop forever
-      if (result.last || result.content.length === 0) {
-        return found;
-      }
-    }
+  /** Which payment mode is on. SIMULATED means no real money moves, so the page can say so before the first payment. */
+  getPaymentConfig(): Observable<PaymentConfig> {
+    return this.http.get<PaymentConfig>(`${this.baseUrl}/config`);
   }
 }

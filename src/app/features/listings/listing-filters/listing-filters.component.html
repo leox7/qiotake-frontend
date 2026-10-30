@@ -29,6 +29,7 @@
       [max]="budgetMax"
       step="1000"
       [value]="sliderValue()"
+      [attr.aria-valuetext]="budgetLabel()"
       (input)="onSliderMove($event)"
       (change)="onSliderRelease()"
     />

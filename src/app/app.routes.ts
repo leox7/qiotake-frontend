@@ -9,7 +9,7 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    title: 'QiotaKE | Student homes near KCA',
+    title: 'Student homes near KCA',
     loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
   },
 
@@ -70,22 +70,44 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/profile/profile.component').then((m) => m.ProfileComponent),
       },
-      // /landlord (dashboard), /landlord/listings, /bookings, /payments, /notifications, /reports
+      // Reports are one shared page (features/reports) that landlords and admins both use. It is attached
+      // here for the same reason as the profile: a feature may not import another feature.
+      {
+        path: 'reports',
+        title: 'Reports',
+        data: { header: { eyebrow: 'Insights', heading: 'Reports' } },
+        loadComponent: () => import('./features/reports/reports.component').then((m) => m.ReportsComponent),
+      },
+      // /landlord (dashboard), /landlord/listings, /bookings, /payments, /notifications
       {
         path: '',
         loadChildren: () => import('./features/landlord/landlord.routes').then((m) => m.LANDLORD_ROUTES),
       },
     ],
   },
+
+  // The admin portal works like the landlord one: the shell draws the dark sidebar layout, the pages appear inside it.
   {
     path: 'admin',
     canActivate: [roleGuard],
     data: { role: 'ADMIN' },
-    title: 'Admin dashboard',
-    loadComponent: () =>
-      import('./features/admin/admin-dashboard/admin-dashboard.component').then(
-        (m) => m.AdminDashboardComponent,
-      ),
+    loadComponent: () => import('./features/admin/admin-shell/admin-shell.component').then((m) => m.AdminShellComponent),
+    children: [
+      {
+        path: 'profile',
+        title: 'My profile',
+        data: { header: { eyebrow: 'Account settings', heading: 'My profile' } },
+        loadComponent: () => import('./features/profile/profile.component').then((m) => m.ProfileComponent),
+      },
+      {
+        path: 'reports',
+        title: 'Reports',
+        data: { header: { eyebrow: 'Insights', heading: 'Reports' } },
+        loadComponent: () => import('./features/reports/reports.component').then((m) => m.ReportsComponent),
+      },
+      // /admin (overview), /admin/users, /listings, /bookings, /payments, /audit-log
+      { path: '', loadChildren: () => import('./features/admin/admin.routes').then((m) => m.ADMIN_ROUTES) },
+    ],
   },
 
   // /faq, /contact, /terms, /privacy

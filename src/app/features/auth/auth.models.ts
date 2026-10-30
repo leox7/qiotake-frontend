@@ -66,5 +66,7 @@ export interface LoginResponse {
   token: string;
   /** The long-lived refresh token (7 days). */
   refreshToken: string;
+  /** ISO date-time of when that refresh token stops working, so the profile can say when the session ends. */
+  refreshTokenExpiresAt: string | null;
   message: string;
 }

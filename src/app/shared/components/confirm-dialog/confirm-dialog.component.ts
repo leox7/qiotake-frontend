@@ -1,4 +1,5 @@
 import { Component, ElementRef, afterNextRender, input, output, viewChild } from '@angular/core';
+import { trapFocus } from '../../../core/utils/trap-focus';
 
 /**
  * A small "Are you sure?" box on top of the page. The parent shows it with @if and closes it
@@ -44,24 +45,6 @@ export class ConfirmDialogComponent {
 
   /** Keep the Tab key inside the box, so keyboard users cannot "fall out" behind it. */
   keepFocusInside(event: KeyboardEvent, box: HTMLElement): void {
-    if (event.key !== 'Tab') {
-      return;
-    }
-    // Disabled buttons cannot take focus, so they are not counted.
-    const buttons = Array.from(box.querySelectorAll<HTMLButtonElement>('button:not(:disabled)'));
-    if (buttons.length === 0) {
-      event.preventDefault();
-      return;
-    }
-    const first = buttons[0];
-    const last = buttons[buttons.length - 1];
-
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
+    trapFocus(event, box);
   }
 }

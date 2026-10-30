@@ -22,6 +22,8 @@ export class EmptyStateComponent {
   readonly icon = input<EmptyStateIcon>('home');
   // Called "heading" (not "title"), because a title attribute would also pop up as a tooltip.
   readonly heading = input.required<string>();
+  /** 2 when the page already has its own h1, 1 when this message IS the page (the not found and no access pages). */
+  readonly headingLevel = input<1 | 2>(2);
   readonly text = input('');
   readonly buttonLabel = input('');
   readonly buttonLink = input('');

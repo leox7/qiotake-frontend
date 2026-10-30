@@ -1,8 +1,6 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { catchError, forkJoin, of } from 'rxjs';
-import { Payment, PaymentStatus, PAYMENT_TYPE_LABELS } from '../../../core/models/payment.model';
-import { BookingService } from '../../../core/services/booking.service';
+import { PaymentStatus, PaymentWithStudent, PAYMENT_TYPE_LABELS } from '../../../core/models/payment.model';
 import { getApiErrorMessage } from '../../../core/utils/api-error';
 import { formatDateTime } from '../../../core/utils/format-date';
 import { MAX_PAGE_SIZE, loadAllPages } from '../../../core/utils/load-all-pages';
@@ -14,41 +12,28 @@ import { SkeletonComponent } from '../../../shared/components/skeleton/skeleton.
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { LandlordStats } from '../landlord.models';
 import { LandlordService } from '../landlord.service';
+import { MoneyPipe } from '../../../core/pipes/money.pipe';
 
 const PAGE_SIZE = 10;
 
 type StatusFilter = 'ALL' | PaymentStatus;
 
-/** A payment plus the first name of the student who made it. */
-interface PaymentRow extends Payment {
-  studentFirstName: string;
-}
-
 /**
  * /landlord/payments: the payments made on the landlord's homes. Read only.
  *
- * The backend gives the payments page by page, with no filter. So this page reads all of them once and
- * filters and pages them itself. A payment has no student name, so it is found through the booking
- * (payment.bookingId -> the landlord's booking requests). The student's phone number is never shown.
+ * The backend gives the payments page by page, with no status filter. So this page reads all of them once and
+ * filters and pages them itself. Every payment comes with the student's name. The student's phone number is never shown.
  */
 @Component({
   selector: 'app-landlord-payments',
-  imports: [
-    DecimalPipe,
-    EmptyStateComponent,
-    ErrorMessageComponent,
-    PaginationComponent,
-    SkeletonComponent,
-    StatusBadgeComponent,
-  ],
+  imports: [EmptyStateComponent, ErrorMessageComponent, PaginationComponent, SkeletonComponent, StatusBadgeComponent, MoneyPipe],
   templateUrl: './payments.component.html',
   styleUrl: './payments.component.css',
 })
 export class PaymentsComponent {
   private readonly landlordService = inject(LandlordService);
-  private readonly bookingService = inject(BookingService);
 
-  readonly payments = signal<PaymentRow[]>([]);
+  readonly payments = signal<PaymentWithStudent[]>([]);
   /** The backend's income numbers. null when they could not be read; the page then adds up the list itself. */
   readonly stats = signal<LandlordStats | null>(null);
   readonly loading = signal(true);
@@ -95,24 +80,17 @@ export class PaymentsComponent {
     this.load();
   }
 
-  /** Reads all payments, the booking requests (for the student names) and the income numbers. Also used by Retry. */
+  /** Reads all payments and the income numbers. Also used by Retry. */
   load(): void {
     this.loading.set(true);
     this.error.set('');
 
     forkJoin({
       payments: loadAllPages((page) => this.landlordService.getReceivedPayments(page, MAX_PAGE_SIZE)),
-      // Only for the student names: if this fails the names show as "-" and the payments still show
-      bookings: loadAllPages((page) => this.bookingService.getLandlordBookings(page, MAX_PAGE_SIZE)).pipe(
-        catchError(() => of([])),
-      ),
       stats: this.landlordService.getStats().pipe(catchError(() => of(null))),
     }).subscribe({
-      next: ({ payments, bookings, stats }) => {
-        const names = new Map(bookings.map((booking) => [booking.id, booking.studentFirstName]));
-        this.payments.set(
-          payments.map((payment) => ({ ...payment, studentFirstName: names.get(payment.bookingId) ?? '-' })),
-        );
+      next: ({ payments, stats }) => {
+        this.payments.set(payments);
         this.stats.set(stats);
         this.loading.set(false);
       },
@@ -128,12 +106,16 @@ export class PaymentsComponent {
     this.page.set(0);
   }
 
-  typeLabel(payment: Payment): string {
+  typeLabel(payment: PaymentWithStudent): string {
     return PAYMENT_TYPE_LABELS[payment.type];
   }
 
-  dateText(payment: Payment): string {
+  dateText(payment: PaymentWithStudent): string {
     return formatDateTime(payment.dateCreated);
+  }
+
+  studentName(payment: PaymentWithStudent): string {
+    return `${payment.studentFirstName} ${payment.studentLastName}`;
   }
 
   private monthKey(date: Date): string {

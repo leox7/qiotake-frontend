@@ -12,6 +12,8 @@ import {
 } from '../../../core/models/listing.model';
 import { PagedResponse } from '../../../core/models/paged-response.model';
 import { getApiErrorMessage } from '../../../core/utils/api-error';
+import { formatMoney } from '../../../core/utils/format-money';
+import { trapFocus } from '../../../core/utils/trap-focus';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { ErrorMessageComponent } from '../../../shared/components/error-message/error-message.component';
 import { ListingCardComponent } from '../../../shared/components/listing-card/listing-card.component';
@@ -94,7 +96,7 @@ export class ListingListComponent {
       chips.push({ key: 'roomType', label: ROOM_TYPE_LABELS[filters.roomType] });
     }
     if (filters.maxPrice !== null) {
-      chips.push({ key: 'maxPrice', label: `Up to KES ${filters.maxPrice.toLocaleString('en-KE')}` });
+      chips.push({ key: 'maxPrice', label: `Up to ${formatMoney(filters.maxPrice)}` });
     }
     if (filters.availableOnly) {
       chips.push({ key: 'availableOnly', label: 'Available now' });
@@ -182,6 +184,11 @@ export class ListingListComponent {
     this.drawerOpen.set(true);
     // Wait until the drawer exists on the screen, then move the keyboard focus into it.
     setTimeout(() => this.drawerClose()?.nativeElement.focus());
+  }
+
+  /** Keep the Tab key inside the drawer, so keyboard users cannot "fall out" behind it. */
+  keepFocusInside(event: KeyboardEvent, box: HTMLElement): void {
+    trapFocus(event, box);
   }
 
   closeDrawer(): void {

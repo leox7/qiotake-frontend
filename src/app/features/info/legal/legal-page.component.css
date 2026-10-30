@@ -1,7 +1,7 @@
 :host {
   display: block;
   /* --muted is too pale for small text on white, so helper text uses a darker mix of it */
-  --text-soft: color-mix(in srgb, var(--muted) 60%, var(--dark));
+  --text-soft: var(--muted-strong);
 }
 
 .page {
@@ -58,7 +58,7 @@
 .toc button {
   display: block;
   width: 100%;
-  min-height: 36px;
+  min-height: 44px;
   /* The coloured line sits on top of the grey one, so it takes 2px of space on the left */
   margin-left: -2px;
   padding: 6px 12px;

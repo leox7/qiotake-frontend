@@ -20,6 +20,9 @@
 }
 
 .photos {
+  /* relative: the screen-reader-only labels inside are position:absolute. Without this they escape the
+     sideways-scrolling strip and make the whole PAGE scroll sideways on phones. */
+  position: relative;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -46,7 +49,7 @@
   position: absolute;
   right: 16px;
   bottom: 16px;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 14px;
   font-size: 14px;
 }

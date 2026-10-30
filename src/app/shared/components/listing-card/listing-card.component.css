@@ -19,7 +19,7 @@
 
 /* Show the focus ring around the whole card when the title link is focused with the keyboard */
 .card:has(a:focus-visible) {
-  outline: 3px solid var(--focus);
+  outline: 3px solid var(--primary);
   outline-offset: 2px;
 }
 
@@ -79,7 +79,7 @@
 }
 
 .location {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 14px;
 }
 
@@ -104,17 +104,24 @@
 }
 
 .landlord {
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 13px;
 }
 
 .price {
   margin-top: 4px;
-  color: var(--muted);
+  color: var(--muted-strong);
   font-size: 14px;
 }
 
 .price strong {
   color: var(--primary);
   font-size: 18px;
+}
+
+/* The small "Verified" mark: the landlord has posted a listing, so the account is active */
+.verified {
+  color: color-mix(in srgb, var(--success) 85%, var(--text));
+  font-size: 13px;
+  font-weight: 700;
 }

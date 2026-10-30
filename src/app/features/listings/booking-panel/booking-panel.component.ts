@@ -1,4 +1,3 @@
-import { DecimalPipe } from '@angular/common';
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -6,6 +5,8 @@ import { Listing } from '../../../core/models/listing.model';
 import { AuthStateService } from '../../../core/services/auth-state.service';
 import { BookingService } from '../../../core/services/booking.service';
 import { getApiErrorMessage } from '../../../core/utils/api-error';
+import { formatDate } from '../../../core/utils/format-date';
+import { MoneyPipe } from '../../../core/pipes/money.pipe';
 
 /**
  * The "Request this home" box on a listing page.
@@ -17,7 +18,7 @@ import { getApiErrorMessage } from '../../../core/utils/api-error';
  */
 @Component({
   selector: 'app-booking-panel',
-  imports: [ReactiveFormsModule, RouterLink, DecimalPipe],
+  imports: [ReactiveFormsModule, RouterLink, MoneyPipe],
   templateUrl: './booking-panel.component.html',
   styleUrl: './booking-panel.component.css',
 })
@@ -33,6 +34,12 @@ export class BookingPanelComponent {
 
   /** "The landlord" when the backend did not send a first name. */
   readonly landlordName = computed(() => this.listing().landlordFirstName || 'The landlord');
+
+  /** "1 June 2027": the last day of the stay that covers today, or '' when the backend sends none. */
+  readonly occupiedUntilText = computed(() => {
+    const date = this.listing().occupiedUntil;
+    return date ? formatDate(date) : '';
+  });
 
   /** Today as "yyyy-MM-dd", for the `min` of the move-in date picker. */
   readonly today = todayAsText();

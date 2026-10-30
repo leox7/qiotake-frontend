@@ -23,3 +23,10 @@ export interface InquiryRequest {
 export const MAX_INQUIRY_NAME_LENGTH = 100;
 export const MAX_INQUIRY_EMAIL_LENGTH = 150;
 export const MAX_INQUIRY_MESSAGE_LENGTH = 500;
+
+/** What POST /api/inquiries answers (InquiryResponseDto). Only the reference is shown to the visitor. */
+export interface InquiryResponse {
+  id: number;
+  /** A number the visitor can quote, for example "INQ-000123". */
+  reference: string;
+}

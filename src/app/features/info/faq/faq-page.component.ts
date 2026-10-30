@@ -10,7 +10,7 @@ import { FaqComponent } from '../../../shared/components/faq/faq.component';
       <p class="eyebrow">Help</p>
       <h1>Frequently asked <span class="accent-word">questions</span></h1>
       <p class="lead">Quick answers about registering, booking and paying. Cannot find yours? Use the contact page.</p>
-      <app-faq />
+      <app-faq [headingLevel]="2" />
     </div>
   `,
   styles: `

@@ -13,6 +13,8 @@ export interface Profile {
   role: Role;
   /** ISO date-time of when the account was created. */
   createdAt: string;
+  /** "ACTIVE", or "DEACTIVATED" once an admin has switched the account off. */
+  status: string;
 
   // students
   university?: string;
