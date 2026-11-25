@@ -71,9 +71,8 @@ app-search-bar {
 /* ---- the picture ---- */
 
 /*
- * A soft gradient. To use a photo, put it in public/images/hero.jpg and add
- *   url('/images/hero.jpg') center / cover no-repeat,
- * in front of the gradient. It is not there now because a missing file shows as a 404 error in the console.
+ * The photo is public/images/hero.jpg. The gradient stays behind it as a fallback while it loads.
+ * It is a CSS background on an element that is hidden on phones, so phones never download it.
  */
 .visual {
   position: relative;
@@ -81,7 +80,9 @@ app-search-bar {
   max-height: 560px;
   width: 100%;
   border-radius: calc(var(--radius-lg) * 2);
-  background: linear-gradient(160deg, color-mix(in srgb, var(--focus) 70%, var(--surface)), var(--primary));
+  background:
+    url('/images/hero.jpg') center / cover no-repeat,
+    linear-gradient(160deg, color-mix(in srgb, var(--focus) 70%, var(--surface)), var(--primary));
 }
 
 .float-card {
